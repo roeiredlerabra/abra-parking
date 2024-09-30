@@ -14,13 +14,33 @@
     .modal {
       direction: rtl;
     }
+    @media (max-width: 640px) {
+      .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      .grid-cols-3 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+      }
+      .md\:col-span-1, .md\:col-span-2 {
+        grid-column: span 1 / span 1;
+      }
+      .car-details {
+        flex-direction: column;
+      }
+      .car-actions {
+        margin-top: 1rem;
+      }
+    }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
   <header class="bg-blue-600 text-white shadow-md">
-    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-      <img src="https://www.abra-it.com/wp-content/uploads/2022/01/Abra-logo-FullColor-blue.png" alt="ABRA לוגו" class="h-12">
-      <h1 class="text-2xl font-bold">מערכת ניהול רכבים</h1>
+    <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
+      <div class="flex items-center mb-4 md:mb-0">
+        <img src="https://www.abra-it.com/wp-content/uploads/2022/01/Abra-logo-FullColor-blue.png" alt="ABRA לוגו" class="h-12 md:h-16 ml-4 md:ml-0">
+        <h1 class="text-2xl font-bold">מערכת ניהול רכבים</h1>
+      </div>
       <button id="logout-button" class="bg-white text-blue-600 px-4 py-2 rounded-md hidden hover:bg-blue-100 transition duration-300">התנתק</button>
     </div>
   </header>
@@ -44,7 +64,7 @@
         <div id="car-list" class="bg-white rounded-lg shadow-md p-6 hidden">
           <h3 class="text-xl font-semibold mb-4"><i class="fas fa-car mr-2"></i>רכבים מקושרים</h3>
           <ul id="car-items" class="space-y-4 mb-6"></ul>
-          <div class="flex space-x-4">
+          <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
             <button id="add-car" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300"><i class="fas fa-plus mr-2"></i>הוסף רכב חדש</button>
             <button id="export-excel" class="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition duration-300"><i class="fas fa-file-excel mr-2"></i>ייצא לאקסל</button>
           </div>
@@ -418,7 +438,7 @@ const CarManagementApp = (function() {
           <h4 class="text-2xl font-semibold text-gray-800">${employee.DisplayName}</h4>
           <p class="text-gray-600 text-md">${employee.JobTitle}</p>
           <p class="text-gray-500 text-sm">${employee.Department}</p>
-          <p class="text-gray-500 text-sm mt-1">Email: <a href="mailto:${employee.Email}" class="text-blue-600 hover:underline">${employee.Email}</a></p>
+          <p class="text-gray-500 text-sm mt-1"> <a href="mailto:${employee.Email}" class="text-blue-600 hover:underline">${employee.Email}</a></p>
         </div>
       </div>
     `;
