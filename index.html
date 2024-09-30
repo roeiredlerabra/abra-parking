@@ -71,6 +71,28 @@
       max-height: 600px;
       overflow-y: auto;
     }
+    .car-item {
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
+    }
+    .car-item:last-child {
+      border-bottom: none;
+    }
+    .car-details {
+      font-size: 0.9em;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 1.5rem;
+      }
+      .logo {
+        max-height: 40px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -79,7 +101,7 @@
       <div class="d-flex justify-content-between align-items-center">
         <img src="https://www.abra-it.com/wp-content/uploads/2022/01/Abra-logo-FullColor-blue.png" alt="ABRA לוגו" class="logo">
         <h1>מערכת ניהול רכבים</h1>
-        <div id="user-info"></div>
+        <button id="logout-button" class="btn btn-outline-light" style="display: none;">התנתק</button>
       </div>
     </div>
   </header>
@@ -105,7 +127,7 @@
         <div id="car-list" class="card" style="display:none;">
           <div class="card-body">
             <h3 class="card-title"><i class="fas fa-car"></i> רכבים מקושרים</h3>
-            <ul id="car-items" class="list-group mb-3"></ul>
+            <ul id="car-items" class="list-unstyled mb-3"></ul>
             <button id="add-car" class="btn btn-secondary"><i class="fas fa-plus"></i> הוסף רכב חדש</button>
             <button id="export-excel" class="btn btn-success ms-2"><i class="fas fa-file-excel"></i> ייצא לאקסל</button>
           </div>
@@ -114,7 +136,114 @@
     </div>
   </main>
 
-  <!-- Modals remain the same -->
+  <!-- Modal for editing car details -->
+  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">עריכת פרטי רכב</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editCarForm">
+            <input type="hidden" id="editCarId">
+            <div class="mb-3">
+              <label for="editCarModel" class="form-label">מודל רכב:</label>
+              <input type="text" class="form-control" id="editCarModel" required>
+            </div>
+            <div class="mb-3">
+              <label for="editCarNumber" class="form-label">מספר רכב:</label>
+              <input type="text" class="form-control" id="editCarNumber" required>
+            </div>
+            <div class="mb-3">
+              <label for="editCarColor" class="form-label">צבע רכב:</label>
+              <input type="text" class="form-control" id="editCarColor" required>
+            </div>
+            <div class="mb-3">
+              <label for="editPersonType" class="form-label">סוג אדם:</label>
+              <select class="form-select" id="editPersonType" required>
+                <option value="Employee">עובד</option>
+                <option value="Guest">אורח</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="editFullName" class="form-label">שם מלא:</label>
+              <input type="text" class="form-control" id="editFullName" required>
+            </div>
+            <div class="mb-3">
+              <label for="editPhoneNumber" class="form-label">מספר טלפון:</label>
+              <input type="tel" class="form-control" id="editPhoneNumber" required>
+            </div>
+            <div id="editGuestFields" style="display:none;">
+              <div class="mb-3">
+                <label for="editFutureParkingDate" class="form-label">תאריך חניה עתידי:</label>
+                <input type="date" class="form-control" id="editFutureParkingDate">
+              </div>
+              <div class="mb-3">
+                <label for="editReason" class="form-label">סיבה:</label>
+                <input type="text" class="form-control" id="editReason">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">שמור שינויים</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for adding a new car -->
+  <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addModalLabel">הוספת רכב חדש</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addCarForm">
+            <div class="mb-3">
+              <label for="addCarModel" class="form-label">מודל רכב:</label>
+              <input type="text" class="form-control" id="addCarModel" required>
+            </div>
+            <div class="mb-3">
+              <label for="addCarNumber" class="form-label">מספר רכב:</label>
+              <input type="text" class="form-control" id="addCarNumber" required>
+            </div>
+            <div class="mb-3">
+              <label for="addCarColor" class="form-label">צבע רכב:</label>
+              <input type="text" class="form-control" id="addCarColor" required>
+            </div>
+            <div class="mb-3">
+              <label for="addPersonType" class="form-label">סוג אדם:</label>
+              <select class="form-select" id="addPersonType" required>
+                <option value="Employee">עובד</option>
+                <option value="Guest">אורח</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="addFullName" class="form-label">שם מלא:</label>
+              <input type="text" class="form-control" id="addFullName" required>
+            </div>
+            <div class="mb-3">
+              <label for="addPhoneNumber" class="form-label">מספר טלפון:</label>
+              <input type="tel" class="form-control" id="addPhoneNumber" required>
+            </div>
+            <div id="addGuestFields" style="display:none;">
+              <div class="mb-3">
+                <label for="addFutureParkingDate" class="form-label">תאריך חניה עתידי:</label>
+                <input type="date" class="form-control" id="addFutureParkingDate">
+              </div>
+              <div class="mb-3">
+                <label for="addReason" class="form-label">סיבה:</label>
+                <input type="text" class="form-control" id="addReason">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">הוסף רכב</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <footer class="footer">
     <div class="container">
@@ -166,12 +295,11 @@ loginForm.addEventListener('submit', function(event) {
       if (data.value && data.value.length > 0) {
         userCars = data.value;
         carList.style.display = 'block';
-        refreshCarList();
-
         if (data.employee) {
           isEmployee = true;
           displayEmployeeInfo(data.employee);
         }
+        refreshCarList();
       } else {
         alert("לא נמצאו רכבים מקושרים לאימייל הזה.");
       }
@@ -223,7 +351,20 @@ function refreshCarList() {
     carItems.appendChild(li);
   });
 
-  document.getElementById('add-car').style.display = isEmployee && userCars.length < 2 ? 'inline-block' : 'none';
+  const addCarButton = document.getElementById('add-car');
+  if (isEmployee) {
+    if (userCars.length < 2) {
+      addCarButton.style.display = 'inline-block';
+    } else {
+      addCarButton.style.display = 'none';
+      const message = document.createElement('p');
+      message.textContent = 'הגעת למכסה המקסימלית של הרכבים המשוייכים';
+      message.className = 'text-danger mt-2';
+      addCarButton.parentNode.appendChild(message);
+    }
+  } else {
+    addCarButton.style.display = 'inline-block';
+  }
 }
 
 function openEditModal(carId) {
@@ -250,6 +391,7 @@ function openEditModal(carId) {
 editPersonType.addEventListener('change', toggleEditGuestFields);
 
 function toggleEditGuestFields() {
+  const editGuestFields = document.getElementById('editGuestFields');
   if (editPersonType.value === 'Guest') {
     editGuestFields.style.display = 'block';
   } else {
