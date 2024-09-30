@@ -105,7 +105,7 @@
       </div>
     </div>
   </header>
-
+  
   <main class="container my-4">
     <div class="row">
       <div class="col-md-4">
@@ -294,15 +294,28 @@ loginForm.addEventListener('submit', function(event) {
     .then(data => {
       if (data.value && data.value.length > 0) {
         userCars = data.value;
-        carList.style.display = 'block';
-        if (data.employee) {
+        // Check if user is an employee
+        const employeeData = userCars[0].employee;
+        if (employeeData) {
           isEmployee = true;
-          displayEmployeeInfo(data.employee);
+          displayEmployeeInfo(employeeData);
+        } else {
+          isEmployee = false;
+          displayGuestInfo(userEmail);
         }
-        refreshCarList();
       } else {
-        alert("לא נמצאו רכבים מקושרים לאימייל הזה.");
+        // No cars found, set up as guest
+        userCars = [];
+        isEmployee = false;
+        displayGuestInfo(userEmail);
+        alert("לא נמצאו רכבים מקושרים לאימייל הזה. אתה מחובר כאורח.");
       }
+      
+      // Update UI for both cases
+      carList.style.display = 'block';
+      document.querySelector('.card-body').style.display = 'none';
+      document.getElementById('logout-button').style.display = 'block';
+      refreshCarList();
     })
     .catch(error => {
       console.error('Error:', error);
@@ -318,6 +331,20 @@ function displayEmployeeInfo(employee) {
       <div>
         <h4>${employee.DisplayName}</h4>
         <p>${employee.JobTitle}, ${employee.Department}</p>
+        <p>Email: ${employee.Email}</p>
+      </div>
+    </div>
+  `;
+}
+
+function displayGuestInfo(email) {
+  employeeInfo.style.display = 'block';
+  employeeInfo.innerHTML = `
+    <div class="d-flex align-items-center">
+      <i class="fas fa-user-circle fa-3x me-3"></i>
+      <div>
+        <h4>אורח</h4>
+        <p>Email: ${email}</p>
       </div>
     </div>
   `;
@@ -338,8 +365,7 @@ function refreshCarList() {
             <br><i class="fas fa-user"></i> סוג: ${car.PersonType}
             <br><i class="fas fa-user"></i> שם מלא: ${car.FullName}
             <br><i class="fas fa-phone"></i> טלפון: ${car.PhoneNumber}
-            ${car.FutureParkingDate ? `<br><i class="fas fa-calendar-alt"></i> תאריך חניה עתידי: ${car.FutureParkingDate}` : ''}
-            ${car.Reason ? `<br><i class="fas fa-comment"></i> סיבה: ${car.Reason}` : ''}
+            ${car.StartingDate ? `<br><i class="fas fa-calendar-alt"></i> תאריך התחלה: ${car.StartingDate}` : ''}
           </small>
         </div>
         <div>
@@ -352,18 +378,27 @@ function refreshCarList() {
   });
 
   const addCarButton = document.getElementById('add-car');
+  const maxCarsMessage = document.getElementById('max-cars-message');
+  
   if (isEmployee) {
     if (userCars.length < 2) {
       addCarButton.style.display = 'inline-block';
+      if (maxCarsMessage) maxCarsMessage.style.display = 'none';
     } else {
       addCarButton.style.display = 'none';
-      const message = document.createElement('p');
-      message.textContent = 'הגעת למכסה המקסימלית של הרכבים המשוייכים';
-      message.className = 'text-danger mt-2';
-      addCarButton.parentNode.appendChild(message);
+      if (!maxCarsMessage) {
+        const message = document.createElement('p');
+        message.id = 'max-cars-message';
+        message.textContent = 'הגעת למכסה המקסימלית של הרכבים המשוייכים';
+        message.className = 'text-danger mt-2';
+        addCarButton.parentNode.insertBefore(message, addCarButton.nextSibling);
+      } else {
+        maxCarsMessage.style.display = 'block';
+      }
     }
   } else {
     addCarButton.style.display = 'inline-block';
+    if (maxCarsMessage) maxCarsMessage.style.display = 'none';
   }
 }
 
@@ -381,8 +416,7 @@ function openEditModal(carId) {
   document.getElementById('editPersonType').value = car.PersonType;
   document.getElementById('editFullName').value = car.FullName;
   document.getElementById('editPhoneNumber').value = car.PhoneNumber;
-  document.getElementById('editFutureParkingDate').value = car.FutureParkingDate || '';
-  document.getElementById('editReason').value = car.Reason || '';
+  document.getElementById('editStartingDate').value = car.StartingDate || '';
 
   toggleEditGuestFields();
   editModal.show();
@@ -758,7 +792,8 @@ function logout() {
   document.getElementById('email').value = '';
   carList.style.display = 'none';
   employeeInfo.style.display = 'none';
-  loginForm.style.display = 'block';
+  document.querySelector('.card-body').style.display = 'block';
+  document.getElementById('logout-button').style.display = 'none';
 }
 
 // Add logout button event listener
@@ -792,7 +827,7 @@ setInterval(refreshData, 300000);
 
 // Initial setup
 document.addEventListener('DOMContentLoaded', function() {
-  // Any initial setup can go here
+  document.getElementById('logout-button').style.display = 'none';
 });
   </script>
 </body>
