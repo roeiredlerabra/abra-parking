@@ -135,315 +135,523 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
   <script>
     const loginForm = document.getElementById('login-form');
-    const carList = document.getElementById('car-list');
-    const carItems = document.getElementById('car-items');
-    const editModal = new bootstrap.Modal(document.getElementById('editModal'));
-    const addModal = new bootstrap.Modal(document.getElementById('addModal'));
-    const editForm = document.getElementById('editCarForm');
-    const addForm = document.getElementById('addCarForm');
-    const editPersonType = document.getElementById('editPersonType');
-    const addPersonType = document.getElementById('addPersonType');
-    const editGuestFields = document.getElementById('guestFields');
-    const addGuestFields = document.getElementById('addGuestFields');
-    const employeeInfo = document.getElementById('employee-info');
-    let userCars = [];
-    let userEmail = '';
-    let isEmployee = false;
+const carList = document.getElementById('car-list');
+const carItems = document.getElementById('car-items');
+const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+const addModal = new bootstrap.Modal(document.getElementById('addModal'));
+const editForm = document.getElementById('editCarForm');
+const addForm = document.getElementById('addCarForm');
+const editPersonType = document.getElementById('editPersonType');
+const addPersonType = document.getElementById('addPersonType');
+const editGuestFields = document.getElementById('guestFields');
+const addGuestFields = document.getElementById('addGuestFields');
+const employeeInfo = document.getElementById('employee-info');
+let userCars = [];
+let userEmail = '';
+let isEmployee = false;
 
-    loginForm.addEventListener('submit', function(event) {
-      event.preventDefault();
-      userEmail = document.getElementById('email').value;
-      
-      fetch('https://prod-121.westeurope.logic.azure.com:443/workflows/f5fc6e19ccf64ce7b1eea09bbca42e43/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=L15vcTNEVuoCJrm51zz1o1uFGoLE5q0ujf2gfYseFYE', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ action: 'login', email: userEmail })
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.value && data.value.length > 0) {
-            userCars = data.value;
-            carList.style.display = 'block';
-            refreshCarList();
+loginForm.addEventListener('submit', function(event) {
+  event.preventDefault();
+  userEmail = document.getElementById('email').value;
+  
+  fetch('https://prod-121.westeurope.logic.azure.com:443/workflows/f5fc6e19ccf64ce7b1eea09bbca42e43/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=L15vcTNEVuoCJrm51zz1o1uFGoLE5q0ujf2gfYseFYE', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ action: 'login', email: userEmail })
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.value && data.value.length > 0) {
+        userCars = data.value;
+        carList.style.display = 'block';
+        refreshCarList();
 
-            if (data.employee) {
-              isEmployee = true;
-              displayEmployeeInfo(data.employee);
-            }
-          } else {
-            alert("לא נמצאו רכבים מקושרים לאימייל הזה.");
-          }
-        });
+        if (data.employee) {
+          isEmployee = true;
+          displayEmployeeInfo(data.employee);
+        }
+      } else {
+        alert("לא נמצאו רכבים מקושרים לאימייל הזה.");
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('אירעה שגיאה בעת ההתחברות. אנא נסה שוב.');
     });
+});
 
-    function displayEmployeeInfo(employee) {
-      employeeInfo.style.display = 'block';
-      employeeInfo.innerHTML = `
-        <div class="d-flex align-items-center">
-          <img src="${employee.Picture}" alt="${employee.DisplayName}" class="employee-picture">
-          <div>
-            <h4>${employee.DisplayName}</h4>
-            <p>${employee.JobTitle}, ${employee.Department}</p>
-          </div>
+function displayEmployeeInfo(employee) {
+  employeeInfo.style.display = 'block';
+  employeeInfo.innerHTML = `
+    <div class="d-flex align-items-center">
+      <img src="${employee.Picture}" alt="${employee.DisplayName}" class="employee-picture">
+      <div>
+        <h4>${employee.DisplayName}</h4>
+        <p>${employee.JobTitle}, ${employee.Department}</p>
+      </div>
+    </div>
+  `;
+}
+
+function refreshCarList() {
+  carItems.innerHTML = '';
+  userCars.forEach(car => {
+    const li = document.createElement('li');
+    li.className = 'list-group-item';
+    li.innerHTML = `
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <strong><i class="fas fa-car-side"></i> ${car.CarModel}</strong> - ${car.CarNumber}
+          <br><small class="text-muted">
+            <i class="fas fa-info-circle"></i> סטטוס: ${car.Status}
+            <br><i class="fas fa-palette"></i> צבע: ${car.CarColor}
+            <br><i class="fas fa-user"></i> סוג: ${car.PersonType}
+            <br><i class="fas fa-user"></i> שם מלא: ${car.FullName}
+            <br><i class="fas fa-phone"></i> טלפון: ${car.PhoneNumber}
+            ${car.FutureParkingDate ? `<br><i class="fas fa-calendar-alt"></i> תאריך חניה עתידי: ${car.FutureParkingDate}` : ''}
+            ${car.Reason ? `<br><i class="fas fa-comment"></i> סיבה: ${car.Reason}` : ''}
+          </small>
         </div>
-      `;
-    }
+        <div>
+          <button onclick="openEditModal(${car.ID})" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></button>
+          <button onclick="deleteCar(${car.ID})" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
+        </div>
+      </div>
+    `;
+    carItems.appendChild(li);
+  });
 
-    function refreshCarList() {
-      carItems.innerHTML = '';
-      userCars.forEach(car => {
-        const li = document.createElement('li');
-        li.className = 'list-group-item';
-        li.innerHTML = `
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <strong><i class="fas fa-car-side"></i> ${car.CarModel}</strong> - ${car.CarNumber}
-              <br><small class="text-muted">
-                <i class="fas fa-info-circle"></i> סטטוס: ${car.Status}
-                <br><i class="fas fa-palette"></i> צבע: ${car.CarColor}
-                <br><i class="fas fa-user"></i> סוג: ${car.PersonType}
-                <br><i class="fas fa-user"></i> שם מלא: ${car.FullName}
-                <br><i class="fas fa-phone"></i> טלפון: ${car.PhoneNumber}
-                ${car.FutureParkingDate ? `<br><i class="fas fa-calendar-alt"></i> תאריך חניה עתידי: ${car.FutureParkingDate}` : ''}
-                ${car.Reason ? `<br><i class="fas fa-comment"></i> סיבה: ${car.Reason}` : ''}
-              </small>
-            </div>
-            <div>
-              <button onclick="openEditModal(${car.ID})" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></button>
-              <button onclick="deleteCar(${car.ID})" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
-            </div>
-          </div>
-        `;
-        carItems.appendChild(li);
+  document.getElementById('add-car').style.display = isEmployee && userCars.length < 2 ? 'inline-block' : 'none';
+}
+
+function openEditModal(carId) {
+  const car = userCars.find(c => c.ID === carId);
+  if (!car) {
+    alert('הרכב לא נמצא');
+    return;
+  }
+
+  document.getElementById('editCarId').value = car.ID;
+  document.getElementById('editCarModel').value = car.CarModel;
+  document.getElementById('editCarNumber').value = car.CarNumber;
+  document.getElementById('editCarColor').value = car.CarColor;
+  document.getElementById('editPersonType').value = car.PersonType;
+  document.getElementById('editFullName').value = car.FullName;
+  document.getElementById('editPhoneNumber').value = car.PhoneNumber;
+  document.getElementById('editFutureParkingDate').value = car.FutureParkingDate || '';
+  document.getElementById('editReason').value = car.Reason || '';
+
+  toggleEditGuestFields();
+  editModal.show();
+}
+
+editPersonType.addEventListener('change', toggleEditGuestFields);
+
+function toggleEditGuestFields() {
+  if (editPersonType.value === 'Guest') {
+    editGuestFields.style.display = 'block';
+  } else {
+    editGuestFields.style.display = 'none';
+  }
+}
+
+editForm.addEventListener('submit', function(event) {
+  event.preventDefault();
+  const carId = document.getElementById('editCarId').value;
+  const newCarModel = document.getElementById('editCarModel').value;
+  const newCarNumber = document.getElementById('editCarNumber').value;
+  const newCarColor = document.getElementById('editCarColor').value;
+  const newPersonType = document.getElementById('editPersonType').value;
+  const newFullName = document.getElementById('editFullName').value;
+  const newPhoneNumber = document.getElementById('editPhoneNumber').value;
+  const newFutureParkingDate = document.getElementById('editFutureParkingDate').value;
+  const newReason = document.getElementById('editReason').value;
+
+  const oldCar = userCars.find(c => c.ID === parseInt(carId));
+  
+  const changes = {
+    CarModel: newCarModel !== oldCar.CarModel ? { before: oldCar.CarModel, after: newCarModel } : null,
+    CarNumber: newCarNumber !== oldCar.CarNumber ? { before: oldCar.CarNumber, after: newCarNumber } : null,
+    CarColor: newCarColor !== oldCar.CarColor ? { before: oldCar.CarColor, after: newCarColor } : null,
+    PersonType: newPersonType !== oldCar.PersonType ? { before: oldCar.PersonType, after: newPersonType } : null,
+    FullName: newFullName !== oldCar.FullName ? { before: oldCar.FullName, after: newFullName } : null,
+    PhoneNumber: newPhoneNumber !== oldCar.PhoneNumber ? { before: oldCar.PhoneNumber, after: newPhoneNumber } : null,
+    FutureParkingDate: newFutureParkingDate !== oldCar.FutureParkingDate ? { before: oldCar.FutureParkingDate, after: newFutureParkingDate } : null,
+    Reason: newReason !== oldCar.Reason ? { before: oldCar.Reason, after: newReason } : null
+  };
+
+  const logChanges = Object.fromEntries(
+    Object.entries(changes).filter(([_, value]) => value !== null)
+  );
+
+  fetch('https://prod-121.westeurope.logic.azure.com:443/workflows/f5fc6e19ccf64ce7b1eea09bbca42e43/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=L15vcTNEVuoCJrm51zz1o1uFGoLE5q0ujf2gfYseFYE', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'edit',
+      email: userEmail,
+      carId: carId,
+      logChanges: logChanges
+    })
+  })
+    .then(response => response.json())
+    .then(data => {
+      alert('הבקשה לעריכת הרכב נשלחה לאישור.');
+      editModal.hide();
+      refreshCarList();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('אירעה שגיאה בעת שליחת הבקשה. אנא נסה שוב.');
+    });
+});
+
+function deleteCar(carId) {
+  const car = userCars.find(c => c.ID === carId);
+  if (!car) {
+    alert('הרכב לא נמצא');
+    return;
+  }
+
+  if (!confirm(`האם אתה בטוח שברצונך למחוק את הרכב ${car.CarModel} (${car.CarNumber})?`)) {
+    return;
+  }
+
+  fetch('https://prod-121.westeurope.logic.azure.com:443/workflows/f5fc6e19ccf64ce7b1eea09bbca42e43/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=L15vcTNEVuoCJrm51zz1o1uFGoLE5q0ujf2gfYseFYE', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'delete',
+      email: userEmail,
+      carId: carId,
+      logChanges: {
+        deletedCar: {
+          CarModel: car.CarModel,
+          CarNumber: car.CarNumber,
+          CarColor: car.CarColor,
+          Status: car.Status,
+          PersonType: car.PersonType,
+          FullName: car.FullName,
+          PhoneNumber: car.PhoneNumber,
+          FutureParkingDate: car.FutureParkingDate,
+          Reason: car.Reason
+        }
+      }
+    })
+  })
+    .then(response => response.json())
+    .then(data => {
+      alert('הבקשה למחיקת הרכב נשלחה לאישור.');
+      refreshCarList();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('אירעה שגיאה בעת שליחת הבקשה. אנא נסה שוב.');
+    });
+}
+
+document.getElementById('add-car').addEventListener('click', function() {
+  if (isEmployee && userCars.length >= 2) {
+    alert('עובדים רשאים להוסיף עד שני רכבים בלבד.');
+    return;
+  }
+  
+  // Set PersonType automatically based on user status
+  document.getElementById('addPersonType').value = isEmployee ? 'Employee' : 'Guest';
+  document.getElementById('addPersonType').disabled = true;
+  toggleAddGuestFields();
+  
+  addModal.show();
+});
+
+addPersonType.addEventListener('change', toggleAddGuestFields);
+
+function toggleAddGuestFields() {
+  if (addPersonType.value === 'Guest') {
+    addGuestFields.style.display = 'block';
+  } else {
+    addGuestFields.style.display = 'none';
+  }
+}
+
+addForm.addEventListener('submit', function(event) {
+  event.preventDefault();
+  const newCarModel = document.getElementById('addCarModel').value;
+  const newCarNumber = document.getElementById('addCarNumber').value;
+  const newCarColor = document.getElementById('addCarColor').value;
+  const personType = document.getElementById('addPersonType').value;
+  const fullName = document.getElementById('addFullName').value;
+  const phoneNumber = document.getElementById('addPhoneNumber').value;
+  let futureParkingDate = document.getElementById('addFutureParkingDate').value;
+  let reason = document.getElementById('addReason').value;
+
+  if (personType !== 'Guest') {
+    futureParkingDate = null;
+    reason = null;
+  }
+
+  fetch('https://prod-121.westeurope.logic.azure.com:443/workflows/f5fc6e19ccf64ce7b1eea09bbca42e43/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=L15vcTNEVuoCJrm51zz1o1uFGoLE5q0ujf2gfYseFYE', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'create',
+      email: userEmail,
+      logChanges: {
+        newCar: {
+          CarModel: newCarModel,
+          CarNumber: newCarNumber,
+          CarColor: newCarColor,
+          PersonType: personType,
+          FullName: fullName,
+          PhoneNumber: phoneNumber,
+          FutureParkingDate: futureParkingDate,
+          Reason: reason
+        }
+      }
+    })
+  })
+    .then(response => response.json())
+    .then(data => {
+      alert('הבקשה להוספת רכב חדש נשלחה לאישור.');
+      addModal.hide();
+      addForm.reset();
+      refreshCarList();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('אירעה שגיאה בעת שליחת הבקשה. אנא נסה שוב.');
+    });
+});
+
+document.getElementById('export-excel').addEventListener('click', function() {
+  if (userCars.length === 0) {
+    alert('אין רכבים לייצוא.');
+    return;
+  }
+
+  const ws = XLSX.utils.json_to_sheet(userCars);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Cars");
+  XLSX.writeFile(wb, "car_list.xlsx");
+});
+
+// Initialize tooltips
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+  return new bootstrap.Tooltip(tooltipTriggerEl)
+});
+
+// Function to validate car number
+function validateCarNumber(carNumber) {
+  // Implement car number validation logic here
+  // For example, check if it's a valid format for your country
+  return /^\d{7,8}$/.test(carNumber); // Example: 7 or 8 digits
+}
+
+// Function to validate phone number
+function validatePhoneNumber(phoneNumber) {
+  // Implement phone number validation logic here
+  return /^05\d{8}$/.test(phoneNumber); // Example: starts with 05 and followed by 8 digits
+}
+
+// Add form validation
+addForm.addEventListener('submit', function(event) {
+  event.preventDefault();
+  
+  const newCarNumber = document.getElementById('addCarNumber').value;
+  const phoneNumber = document.getElementById('addPhoneNumber').value;
+
+  if (!validateCarNumber(newCarNumber)) {
+    alert('מספר הרכב אינו תקין. אנא הזן מספר רכב חוקי.');
+    return;
+  }
+
+  if (!validatePhoneNumber(phoneNumber)) {
+    alert('מספר הטלפון אינו תקין. אנא הזן מספר טלפון חוקי.');
+    return;
+  }
+
+  // If validation passes, continue with form submission
+  submitAddForm();
+});
+
+// Function to submit add form
+function submitAddForm() {
+  const newCarModel = document.getElementById('addCarModel').value;
+  const newCarNumber = document.getElementById('addCarNumber').value;
+  const newCarColor = document.getElementById('addCarColor').value;
+  const personType = document.getElementById('addPersonType').value;
+  const fullName = document.getElementById('addFullName').value;
+  const phoneNumber = document.getElementById('addPhoneNumber').value;
+  let futureParkingDate = document.getElementById('addFutureParkingDate').value;
+  let reason = document.getElementById('addReason').value;
+
+  if (personType !== 'Guest') {
+    futureParkingDate = null;
+    reason = null;
+  }
+
+  fetch('https://prod-121.westeurope.logic.azure.com:443/workflows/f5fc6e19ccf64ce7b1eea09bbca42e43/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=L15vcTNEVuoCJrm51zz1o1uFGoLE5q0ujf2gfYseFYE', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'create',
+      email: userEmail,
+      logChanges: {
+        newCar: {
+          CarModel: newCarModel,
+          CarNumber: newCarNumber,
+          CarColor: newCarColor,
+          PersonType: personType,
+          FullName: fullName,
+          PhoneNumber: phoneNumber,
+          FutureParkingDate: futureParkingDate,
+          Reason: reason
+        }
+      }
+    })
+  })
+    .then(response => response.json())
+    .then(data => {
+      alert('הבקשה להוספת רכב חדש נשלחה לאישור.');
+      addModal.hide();
+      addForm.reset();
+      refreshCarList();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('אירעה שגיאה בעת שליחת הבקשה. אנא נסה שוב.');
+    });
+}
+
+// Add edit form validation
+editForm.addEventListener('submit', function(event) {
+  event.preventDefault();
+  
+  const newCarNumber = document.getElementById('editCarNumber').value;
+  const phoneNumber = document.getElementById('editPhoneNumber').value;
+
+  if (!validateCarNumber(newCarNumber)) {
+    alert('מספר הרכב אינו תקין. אנא הזן מספר רכב חוקי.');
+    return;
+  }
+
+  if (!validatePhoneNumber(phoneNumber)) {
+    alert('מספר הטלפון אינו תקין. אנא הזן מספר טלפון חוקי.');
+    return;
+  }
+
+  // If validation passes, continue with form submission
+  submitEditForm();
+});
+
+// Function to submit edit form
+function submitEditForm() {
+  const carId = document.getElementById('editCarId').value;
+  const newCarModel = document.getElementById('editCarModel').value;
+  const newCarNumber = document.getElementById('editCarNumber').value;
+  const newCarColor = document.getElementById('editCarColor').value;
+  const newPersonType = document.getElementById('editPersonType').value;
+  const newFullName = document.getElementById('editFullName').value;
+  const newPhoneNumber = document.getElementById('editPhoneNumber').value;
+  const newFutureParkingDate = document.getElementById('editFutureParkingDate').value;
+  const newReason = document.getElementById('editReason').value;
+
+  const oldCar = userCars.find(c => c.ID === parseInt(carId));
+  
+  const changes = {
+    CarModel: newCarModel !== oldCar.CarModel ? { before: oldCar.CarModel, after: newCarModel } : null,
+    CarNumber: newCarNumber !== oldCar.CarNumber ? { before: oldCar.CarNumber, after: newCarNumber } : null,
+    CarColor: newCarColor !== oldCar.CarColor ? { before: oldCar.CarColor, after: newCarColor } : null,
+    PersonType: newPersonType !== oldCar.PersonType ? { before: oldCar.PersonType, after: newPersonType } : null,
+    FullName: newFullName !== oldCar.FullName ? { before: oldCar.FullName, after: newFullName } : null,
+    PhoneNumber: newPhoneNumber !== oldCar.PhoneNumber ? { before: oldCar.PhoneNumber, after: newPhoneNumber } : null,
+    FutureParkingDate: newFutureParkingDate !== oldCar.FutureParkingDate ? { before: oldCar.FutureParkingDate, after: newFutureParkingDate } : null,
+    Reason: newReason !== oldCar.Reason ? { before: oldCar.Reason, after: newReason } : null
+  };
+
+  const logChanges = Object.fromEntries(
+    Object.entries(changes).filter(([_, value]) => value !== null)
+  );
+
+  fetch('https://prod-121.westeurope.logic.azure.com:443/workflows/f5fc6e19ccf64ce7b1eea09bbca42e43/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=L15vcTNEVuoCJrm51zz1o1uFGoLE5q0ujf2gfYseFYE', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'edit',
+      email: userEmail,
+      carId: carId,
+      logChanges: logChanges
+    })
+  })
+    .then(response => response.json())
+    .then(data => {
+      alert('הבקשה לעריכת הרכב נשלחה לאישור.');
+      editModal.hide();
+      refreshCarList();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('אירעה שגיאה בעת שליחת הבקשה. אנא נסה שוב.');
+    });
+}
+
+// Function to handle logout
+function logout() {
+  userCars = [];
+  userEmail = '';
+  isEmployee = false;
+  document.getElementById('email').value = '';
+  carList.style.display = 'none';
+  employeeInfo.style.display = 'none';
+  loginForm.style.display = 'block';
+}
+
+// Add logout button event listener
+document.getElementById('logout-button').addEventListener('click', logout);
+
+// Function to refresh data periodically
+function refreshData() {
+  if (userEmail) {
+    fetch('https://prod-121.westeurope.logic.azure.com:443/workflows/f5fc6e19ccf64ce7b1eea09bbca42e43/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=L15vcTNEVuoCJrm51zz1o1uFGoLE5q0ujf2gfYseFYE', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action: 'refresh', email: userEmail })
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.value && data.value.length > 0) {
+          userCars = data.value;
+          refreshCarList();
+        }
+      })
+      .catch(error => {
+        console.error('Error refreshing data:', error);
       });
+  }
+}
 
-      document.getElementById('add-car').style.display = isEmployee && userCars.length < 2 ? 'inline-block' : 'none';
-    }
+// Refresh data every 5 minutes
+setInterval(refreshData, 300000);
 
-    function openEditModal(carId) {
-      const car = userCars.find(c => c.ID === carId);
-      if (!car) {
-        alert('הרכב לא נמצא');
-        return;
-      }
-
-      document.getElementById('editCarId').value = car.ID;
-      document.getElementById('editCarModel').value = car.CarModel;
-      document.getElementById('editCarNumber').value = car.CarNumber;
-      document.getElementById('editCarColor').value = car.CarColor;
-      document.getElementById('editPersonType').value = car.PersonType;
-      document.getElementById('editFullName').value = car.FullName;
-      document.getElementById('editPhoneNumber').value = car.PhoneNumber;
-      document.getElementById('editFutureParkingDate').value = car.FutureParkingDate || '';
-      document.getElementById('editReason').value = car.Reason || '';
-
-      toggleEditGuestFields();
-      editModal.show();
-    }
-
-    editPersonType.addEventListener('change', toggleEditGuestFields);
-
-    function toggleEditGuestFields() {
-      if (editPersonType.value === 'Guest') {
-        editGuestFields.style.display = 'block';
-      } else {
-        editGuestFields.style.display = 'none';
-      }
-    }
-
-    editForm.addEventListener('submit', function(event) {
-      event.preventDefault();
-      const carId = document.getElementById('editCarId').value;
-      const newCarModel = document.getElementById('editCarModel').value;
-      const newCarNumber = document.getElementById('editCarNumber').value;
-      const newCarColor = document.getElementById('editCarColor').value;
-      const newPersonType = document.getElementById('editPersonType').value;
-      const newFullName = document.getElementById('editFullName').value;
-      const newPhoneNumber = document.getElementById('editPhoneNumber').value;
-      const newFutureParkingDate = document.getElementById('editFutureParkingDate').value;
-      const newReason = document.getElementById('editReason').value;
-
-      const oldCar = userCars.find(c => c.ID === parseInt(carId));
-      
-      const changes = {
-        CarModel: newCarModel !== oldCar.CarModel ? { before: oldCar.CarModel, after: newCarModel } : null,
-        CarNumber: newCarNumber !== oldCar.CarNumber ? { before: oldCar.CarNumber, after: newCarNumber } : null,
-        CarColor: newCarColor !== oldCar.CarColor ? { before: oldCar.CarColor, after: newCarColor } : null,
-        PersonType: newPersonType !== oldCar.PersonType ? { before: oldCar.PersonType, after: newPersonType } : null,
-        FullName: newFullName !== oldCar.FullName ? { before: oldCar.FullName, after: newFullName } : null,
-        PhoneNumber: newPhoneNumber !== oldCar.PhoneNumber ? { before: oldCar.PhoneNumber, after: newPhoneNumber } : null,
-        FutureParkingDate: newFutureParkingDate !== oldCar.FutureParkingDate ? { before: oldCar.FutureParkingDate, after: newFutureParkingDate } : null,
-        Reason: newReason !== oldCar.Reason ? { before: oldCar.Reason, after: newReason } : null
-      };
-
-      const logChanges = Object.fromEntries(
-        Object.entries(changes).filter(([_, value]) => value !== null)
-      );
-
-      fetch('https://prod-121.westeurope.logic.azure.com:443/workflows/f5fc6e19ccf64ce7b1eea09bbca42e43/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=L15vcTNEVuoCJrm51zz1o1uFGoLE5q0ujf2gfYseFYE', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'edit',
-          email: userEmail,
-          carId: carId,
-          logChanges: logChanges
-        })
-      })
-        .then(response => response.json())
-        .then(data => {
-          alert('הבקשה לעריכת הרכב נשלחה לאישור.');
-          editModal.hide();
-          refreshCarList();
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('אירעה שגיאה בעת שליחת הבקשה. אנא נסה שוב.');
-        });
-    });
-
-    function deleteCar(carId) {
-      const car = userCars.find(c => c.ID === carId);
-      if (!car) {
-        alert('הרכב לא נמצא');
-        return;
-      }
-
-      if (!confirm(`האם אתה בטוח שברצונך למחוק את הרכב ${car.CarModel} (${car.CarNumber})?`)) {
-        return;
-      }
-
-      fetch('https://prod-121.westeurope.logic.azure.com:443/workflows/f5fc6e19ccf64ce7b1eea09bbca42e43/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=L15vcTNEVuoCJrm51zz1o1uFGoLE5q0ujf2gfYseFYE', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'delete',
-          email: userEmail,
-          carId: carId,
-          logChanges: {
-            deletedCar: {
-              CarModel: car.CarModel,
-              CarNumber: car.CarNumber,
-              CarColor: car.CarColor,
-              Status: car.Status,
-              PersonType: car.PersonType,
-              FullName: car.FullName,
-              PhoneNumber: car.PhoneNumber,
-              FutureParkingDate: car.FutureParkingDate,
-              Reason: car.Reason
-            }
-          }
-        })
-      })
-        .then(response => response.json())
-        .then(data => {
-          alert('הבקשה למחיקת הרכב נשלחה לאישור.');
-          refreshCarList();
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('אירעה שגיאה בעת שליחת הבקשה. אנא נסה שוב.');
-        });
-    }
-
-    document.getElementById('add-car').addEventListener('click', function() {
-      if (isEmployee && userCars.length >= 2) {
-        alert('עובדים רשאים להוסיף עד שני רכבים בלבד.');
-        return;
-      }
-      
-      // Set PersonType automatically based on user status
-      document.getElementById('addPersonType').value = isEmployee ? 'Employee' : 'Guest';
-      document.getElementById('addPersonType').disabled = true;
-      toggleAddGuestFields();
-      
-      addModal.show();
-    });
-
-    addPersonType.addEventListener('change', toggleAddGuestFields);
-
-    function toggleAddGuestFields() {
-      if (addPersonType.value === 'Guest') {
-        addGuestFields.style.display = 'block';
-      } else {
-        addGuestFields.style.display = 'none';
-      }
-    }
-
-    addForm.addEventListener('submit', function(event) {
-      event.preventDefault();
-      const newCarModel = document.getElementById('addCarModel').value;
-      const newCarNumber = document.getElementById('addCarNumber').value;
-      const newCarColor = document.getElementById('addCarColor').value;
-      const personType = document.getElementById('addPersonType').value;
-      const fullName = document.getElementById('addFullName').value;
-      const phoneNumber = document.getElementById('addPhoneNumber').value;
-      let futureParkingDate = document.getElementById('addFutureParkingDate').value;
-      let reason = document.getElementById('addReason').value;
-
-      if (personType !== 'Guest') {
-        futureParkingDate = null;
-        reason = null;
-      }
-
-      fetch('https://prod-121.westeurope.logic.azure.com:443/workflows/f5fc6e19ccf64ce7b1eea09bbca42e43/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=L15vcTNEVuoCJrm51zz1o1uFGoLE5q0ujf2gfYseFYE', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'create',
-          email: userEmail,
-          logChanges: {
-            newCar: {
-              CarModel: newCarModel,
-              CarNumber: newCarNumber,
-              CarColor: newCarColor,
-              PersonType: personType,
-              FullName: fullName,
-              PhoneNumber: phoneNumber,
-              FutureParkingDate: futureParkingDate,
-              Reason: reason
-            }
-          }
-        })
-      })
-        .then(response => response.json())
-        .then(data => {
-          alert('הבקשה להוספת רכב חדש נשלחה לאישור.');
-          addModal.hide();
-          addForm.reset();
-          refreshCarList();
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('אירעה שגיאה בעת שליחת הבקשה. אנא נסה שוב.');
-        });
-    });
-
-    document.getElementById('export-excel').addEventListener('click', function() {
-      if (userCars.length === 0) {
-        alert('אין רכבים לייצוא.');
-        return;
-      }
-
-      const ws = XLSX.utils.json_to_sheet(userCars);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Cars");
-      XLSX.writeFile(wb, "car_list.xlsx");
-    });
-
-    // Initialize tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl)
-    });
+// Initial setup
+document.addEventListener('DOMContentLoaded', function() {
+  // Any initial setup can go here
+});
   </script>
 </body>
 </html>
