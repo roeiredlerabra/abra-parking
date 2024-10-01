@@ -95,43 +95,50 @@
           <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
             עריכת פרטי רכב
           </h3>
+
           <form id="editCarForm" class="mt-2">
-            <input type="hidden" id="editCarId">
+            <input type="hidden" id="editCarId" name="editCarId">
             <div class="mb-3">
               <label for="editCarModel" class="block text-sm font-medium text-gray-700">מודל רכב:</label>
-              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editCarModel" required aria-label="מודל רכב">
+              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editCarModel" name="editCarModel" required aria-label="מודל רכב">
             </div>
             <div class="mb-3">
               <label for="editCarNumber" class="block text-sm font-medium text-gray-700">מספר רכב:</label>
-              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editCarNumber" required aria-label="מספר רכב">
+              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editCarNumber" name="editCarNumber" required aria-label="מספר רכב">
             </div>
             <div class="mb-3">
               <label for="editCarColor" class="block text-sm font-medium text-gray-700">צבע רכב:</label>
-              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editCarColor" required aria-label="צבע רכב">
+              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editCarColor" name="editCarColor" required aria-label="צבע רכב">
             </div>
             <div class="mb-3">
               <label for="editPersonType" class="block text-sm font-medium text-gray-700">סוג אדם:</label>
-              <select class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editPersonType" required aria-label="סוג אדם">
+              <select class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editPersonType" name="editPersonType" required aria-label="סוג אדם">
                 <option value="Employee">עובד</option>
                 <option value="Guest">אורח</option>
               </select>
             </div>
             <div class="mb-3">
               <label for="editFullName" class="block text-sm font-medium text-gray-700">שם מלא:</label>
-              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editFullName" required aria-label="שם מלא">
+              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editFullName" name="editFullName" required aria-label="שם מלא">
             </div>
             <div class="mb-3">
               <label for="editPhoneNumber" class="block text-sm font-medium text-gray-700">מספר טלפון:</label>
-              <input type="tel" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editPhoneNumber" required aria-label="מספר טלפון">
+              <input type="tel" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editPhoneNumber" name="editPhoneNumber" required aria-label="מספר טלפון">
+            </div>
+            <div id="editEmployeeFields" class="hidden">
+              <div class="mb-3">
+                <label for="editStartingDate" class="block text-sm font-medium text-gray-700">תאריך התחלה:</label>
+                <input type="date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editStartingDate" name="editStartingDate" aria-label="תאריך התחלה">
+              </div>
             </div>
             <div id="editGuestFields" class="hidden">
               <div class="mb-3">
                 <label for="editFutureParkingDate" class="block text-sm font-medium text-gray-700">תאריך חניה עתידי:</label>
-                <input type="date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editFutureParkingDate" required aria-label="תאריך חניה עתידי">
+                <input type="date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editFutureParkingDate" name="editFutureParkingDate" aria-label="תאריך חניה עתידי">
               </div>
               <div class="mb-3">
                 <label for="editReason" class="block text-sm font-medium text-gray-700">סיבה:</label>
-                <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editReason" aria-label="סיבה">
+                <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editReason" name="editReason" aria-label="סיבה">
               </div>
             </div>
           </form>
@@ -147,6 +154,8 @@
       </div>
     </div>
   </div>
+  
+
 
   <!-- Modal for adding a new car -->
   <div class="fixed z-10 inset-0 overflow-y-auto hidden" id="addModal" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -158,42 +167,49 @@
           <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
             הוספת רכב חדש
           </h3>
+
           <form id="addCarForm" class="mt-2">
             <div class="mb-3">
               <label for="addCarModel" class="block text-sm font-medium text-gray-700">מודל רכב:</label>
-              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addCarModel" required aria-label="מודל רכב">
+              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addCarModel" name="addCarModel" required aria-label="מודל רכב">
             </div>
             <div class="mb-3">
               <label for="addCarNumber" class="block text-sm font-medium text-gray-700">מספר רכב:</label>
-              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addCarNumber" required aria-label="מספר רכב">
+              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addCarNumber" name="addCarNumber" required aria-label="מספר רכב">
             </div>
             <div class="mb-3">
               <label for="addCarColor" class="block text-sm font-medium text-gray-700">צבע רכב:</label>
-              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addCarColor" required aria-label="צבע רכב">
+              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addCarColor" name="addCarColor" required aria-label="צבע רכב">
             </div>
             <div class="mb-3">
               <label for="addPersonType" class="block text-sm font-medium text-gray-700">סוג אדם:</label>
-              <select class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addPersonType" required aria-label="סוג אדם">
+              <select class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addPersonType" name="addPersonType" required aria-label="סוג אדם">
                 <option value="Employee">עובד</option>
                 <option value="Guest">אורח</option>
               </select>
             </div>
             <div class="mb-3">
               <label for="addFullName" class="block text-sm font-medium text-gray-700">שם מלא:</label>
-              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addFullName" required aria-label="שם מלא">
+              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addFullName" name="addFullName" required aria-label="שם מלא">
             </div>
             <div class="mb-3">
               <label for="addPhoneNumber" class="block text-sm font-medium text-gray-700">מספר טלפון:</label>
-              <input type="tel" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addPhoneNumber" required aria-label="מספר טלפון">
+              <input type="tel" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addPhoneNumber" name="addPhoneNumber" required aria-label="מספר טלפון">
+            </div>
+            <div id="addEmployeeFields" class="hidden">
+              <div class="mb-3">
+                <label for="addStartingDate" class="block text-sm font-medium text-gray-700">תאריך התחלה:</label>
+                <input type="date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addStartingDate" name="addStartingDate" aria-label="תאריך התחלה">
+              </div>
             </div>
             <div id="addGuestFields" class="hidden">
               <div class="mb-3">
                 <label for="addFutureParkingDate" class="block text-sm font-medium text-gray-700">תאריך חניה עתידי:</label>
-                <input type="date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addFutureParkingDate" required aria-label="תאריך חניה עתידי">
+                <input type="date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addFutureParkingDate" name="addFutureParkingDate" aria-label="תאריך חניה עתידי">
               </div>
               <div class="mb-3">
                 <label for="addReason" class="block text-sm font-medium text-gray-700">סיבה:</label>
-                <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addReason" aria-label="סיבה">
+                <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addReason" name="addReason" aria-label="סיבה">
               </div>
             </div>
           </form>
@@ -263,8 +279,8 @@ const CarManagementApp = (function() {
     elements.logoutButton.addEventListener('click', handleLogout);
     elements.editForm.addEventListener('submit', handleEditSubmit);
     elements.addForm.addEventListener('submit', handleAddSubmit);
-    elements.editPersonType.addEventListener('change', toggleEditGuestFields);
-    elements.addPersonType.addEventListener('change', toggleAddGuestFields);
+    elements.editPersonType.addEventListener('change', toggleEditFields);
+    elements.addPersonType.addEventListener('change', toggleAddFields);
   }
 
   // API Calls
@@ -363,6 +379,7 @@ const CarManagementApp = (function() {
     const newPhoneNumber = document.getElementById('editPhoneNumber').value;
     const newFutureParkingDate = document.getElementById('editFutureParkingDate').value;
     const newReason = document.getElementById('editReason').value;
+    const newStartingDate = document.getElementById('editStartingDate').value;
 
     if (!validateCarNumber(newCarNumber)) {
       alert('מספר הרכב אינו תקין. אנא הזן מספר רכב חוקי.');
@@ -384,6 +401,7 @@ const CarManagementApp = (function() {
       FullName: newFullName !== oldCar.FullName ? { before: oldCar.FullName, after: newFullName } : null,
       PhoneNumber: newPhoneNumber !== oldCar.PhoneNumber ? { before: oldCar.PhoneNumber, after: newPhoneNumber } : null,
       FutureParkingDate: newFutureParkingDate !== oldCar.FutureParkingDate ? { before: oldCar.FutureParkingDate, after: newFutureParkingDate } : null,
+      StartingDate: newStartingDate !== oldCar.StartingDate ? { before: oldCar.StartingDate, after: newStartingDate } : null,
       Reason: newReason !== oldCar.Reason ? { before: oldCar.Reason, after: newReason } : null
     };
 
@@ -399,7 +417,49 @@ const CarManagementApp = (function() {
     })
     .catch(handleError);
 }
+function closeEditModal() {
+  // Hide the modal
+  const editModal = document.getElementById('editModal');
+  if (editModal) {
+    editModal.classList.add('hidden');
+  }
 
+  // Reset the form
+  const editForm = document.getElementById('editCarForm');
+  if (editForm) {
+    editForm.reset();
+  }
+
+  // Remove required attributes from dynamic fields
+  const editStartingDate = document.getElementById('editStartingDate');
+  const editFutureParkingDate = document.getElementById('editFutureParkingDate');
+  if (editStartingDate) editStartingDate.removeAttribute('required');
+  if (editFutureParkingDate) editFutureParkingDate.removeAttribute('required');
+
+  // Hide both employee and guest fields
+  const editEmployeeFields = document.getElementById('editEmployeeFields');
+  const editGuestFields = document.getElementById('editGuestFields');
+  if (editEmployeeFields) editEmployeeFields.classList.add('hidden');
+  if (editGuestFields) editGuestFields.classList.add('hidden');
+
+  // Reset the person type select to default
+  const editPersonType = document.getElementById('editPersonType');
+  if (editPersonType) editPersonType.value = 'Employee';
+
+  // Clear any validation messages or styles
+  clearValidationErrors();
+}
+
+// Helper function to clear validation errors (implement this based on your validation strategy)
+function clearValidationErrors() {
+  // Remove any error messages or styling
+  // For example:
+  const errorMessages = document.querySelectorAll('.error-message');
+  errorMessages.forEach(el => el.remove());
+
+  const errorFields = document.querySelectorAll('.error-field');
+  errorFields.forEach(el => el.classList.remove('error-field'));
+}
   function handleAddSubmit(event) {
     event.preventDefault();
     
@@ -411,6 +471,7 @@ const CarManagementApp = (function() {
     const phoneNumber = document.getElementById('addPhoneNumber').value;
     let futureParkingDate = document.getElementById('addFutureParkingDate').value;
     let reason = document.getElementById('addReason').value;
+    const startingDate = document.getElementById('addStartingDate').value;
 
     if (!validateCarNumber(newCarNumber)) {
       alert('מספר הרכב אינו תקין. אנא הזן מספר רכב חוקי.');
@@ -435,7 +496,8 @@ const CarManagementApp = (function() {
       FullName: fullName,
       PhoneNumber: phoneNumber,
       FutureParkingDate: futureParkingDate,
-      Reason: reason
+      Reason: reason,
+      StartingDate: personType === 'Employee' ? startingDate : null
     };
 
     api.createCar(newCarData)
@@ -485,7 +547,7 @@ const CarManagementApp = (function() {
         <i class="fas fa-user-circle text-5xl text-gray-400 mr-4"></i>
         <div>
           <h4 class="text-lg font-semibold">אורח</h4>
-          <p class="text-gray-600">Email: ${email}</p>
+          <p class="text-gray-600">${email}</p>
         </div>
       </div>
     `;
@@ -578,33 +640,86 @@ const CarManagementApp = (function() {
   }
 
   function openEditModal(carId) {
-    const car = userCars.find(c => c.ID === carId);
-    if (!car) {
-      alert('הרכב לא נמצא');
-      return;
-    }
+  const car = userCars.find(c => c.ID === carId);
+  if (!car) {
+    alert('הרכב לא נמצא');
+    return;
+  }
 
-    document.getElementById('editCarId').value = car.ID;
-    document.getElementById('editCarModel').value = car.CarModel;
-    document.getElementById('editCarNumber').value = car.CarNumber;
-document.getElementById('editCarColor').value = car.CarColor;
-document.getElementById('editPersonType').value = car.PersonType;
-document.getElementById('editFullName').value = car.FullName;
-document.getElementById('editPhoneNumber').value = car.PhoneNumber;
-document.getElementById('editFutureParkingDate').value = car.FutureParkingDate || '';
-document.getElementById('editReason').value = car.Reason || '';
-toggleEditGuestFields();
-openModal('editModal');
-}
-function closeEditModal() {
-closeModal('editModal');
+  document.getElementById('editCarId').value = car.ID;
+  document.getElementById('editCarModel').value = car.CarModel;
+  document.getElementById('editCarNumber').value = car.CarNumber;
+  document.getElementById('editCarColor').value = car.CarColor;
+  document.getElementById('editPersonType').value = car.PersonType;
+  document.getElementById('editFullName').value = car.FullName;
+  document.getElementById('editPhoneNumber').value = car.PhoneNumber;
+  document.getElementById('editFutureParkingDate').value = car.FutureParkingDate || '';
+  document.getElementById('editReason').value = car.Reason || '';
+  document.getElementById('editStartingDate').value = car.StartingDate || '';
+
+  toggleEditFields();
+  openModal('editModal');
 }
 function openAddModal() {
-document.getElementById('addPersonType').value = isEmployee ? 'Employee' : 'Guest';
-document.getElementById('addPersonType').disabled = true;
-toggleAddGuestFields();
-openModal('addModal');
+  document.getElementById('addPersonType').value = isEmployee ? 'Employee' : 'Guest';
+  document.getElementById('addPersonType').disabled = isEmployee;
+  toggleAddFields();
+  openModal('addModal');
 }
+  function toggleEditFields() {
+  const personType = elements.editPersonType.value;
+  const guestFields = elements.editGuestFields;
+  const employeeFields = document.getElementById('editEmployeeFields');
+  const futureParkingDateInput = document.getElementById('editFutureParkingDate');
+  const startingDateInput = document.getElementById('editStartingDate');
+
+  guestFields.style.display = personType === 'Guest' ? 'block' : 'none';
+  employeeFields.style.display = personType === 'Employee' ? 'block' : 'none';
+
+  if (isEmployee) {
+    futureParkingDateInput.removeAttribute('required');
+    startingDateInput.setAttribute('required', '');
+  } else {
+    if (personType === 'Guest') {
+      futureParkingDateInput.setAttribute('required', '');
+    } else {
+      futureParkingDateInput.removeAttribute('required');
+    }
+    startingDateInput.removeAttribute('required');
+  }
+}
+
+function toggleAddFields() {
+  const personType = elements.addPersonType.value;
+  const guestFields = elements.addGuestFields;
+  const employeeFields = document.getElementById('addEmployeeFields');
+  const futureParkingDateInput = document.getElementById('addFutureParkingDate');
+  const startingDateInput = document.getElementById('addStartingDate');
+
+  guestFields.style.display = personType === 'Guest' ? 'block' : 'none';
+  employeeFields.style.display = personType === 'Employee' ? 'block' : 'none';
+
+  if (isEmployee) {
+    futureParkingDateInput.removeAttribute('required');
+    startingDateInput.setAttribute('required', '');
+  } else {
+    if (personType === 'Guest') {
+      futureParkingDateInput.setAttribute('required', '');
+    } else {
+      futureParkingDateInput.removeAttribute('required');
+    }
+    startingDateInput.removeAttribute('required');
+  }
+}
+
+  function toggleGuestFields(personType, guestFieldsElement) {
+    guestFieldsElement.style.display = personType.value === 'Guest' ? 'block' : 'none';
+  }
+
+  function toggleEmployeeFields(personType, employeeFieldsElement) {
+    employeeFieldsElement.style.display = personType.value === 'Employee' ? 'block' : 'none';
+  }
+  
 function closeAddModal() {
 closeModal('addModal');
 }
@@ -626,24 +741,59 @@ function deleteCar(carId) {
 }
 // New function to update data from API response
 function updateDataFromResponse(response) {
-  if (response.value && Array.isArray(response.value)) {
-    userCars = response.value;
-    
+  let carData = [];
+
+  // Check if the response has a 'value' property that is an array
+  if (response && Array.isArray(response.value)) {
+    carData = response.value;
+  } 
+  // If the response itself is an array, use it directly
+  else if (Array.isArray(response)) {
+    carData = response;
+  } 
+  // If we can't identify the structure, log an error
+  else {
+    console.error('Unexpected response format:', response);
+    alert('אירעה שגיאה בעדכון הנתונים. אנא רענן את הדף ונסה שוב.');
+    return;
+  }
+
+  if (carData.length > 0) {
+    userCars = carData.map(car => ({
+      ID: car.ID,
+      CarModel: car.CarModel,
+      CarNumber: car.CarNumber.toString(), // Convert to string as it might come as a number
+      CarColor: car.CarColor,
+      PersonType: car.PersonType,
+      FullName: car.FullName,
+      PhoneNumber: car.PhoneNumber,
+      Status: car.Status,
+      StartingDate: car.StartingDate,
+      Email: car.Email
+    }));
+
     // Check if the user is an employee
-    isEmployee = userCars.length > 0 && !!userCars[0].employee;
-    
-    if (isEmployee && userCars[0].employee) {
-      displayEmployeeInfo(userCars[0].employee);
+    isEmployee = !!carData[0].employee;
+
+    if (isEmployee && carData[0].employee) {
+      const employeeData = carData[0].employee;
+      displayEmployeeInfo({
+        DisplayName: employeeData.DisplayName,
+        JobTitle: employeeData.JobTitle,
+        Department: employeeData.Department,
+        Email: employeeData.Email
+      });
     } else {
       displayGuestInfo(userEmail);
     }
-    
+
     refreshCarList();
   } else {
-    console.error('Unexpected response format:', response);
-    alert('אירעה שגיאה בעדכון הנתונים. אנא רענן את הדף ונסה שוב.');
+    console.log('No car data found in the response');
+    alert('לא נמצאו רכבים מקושרים לחשבון זה.');
   }
 }
+
 function toggleGuestFields(personType, guestFieldsElement) {
 guestFieldsElement.style.display = personType.value === 'Guest' ? 'block' : 'none';
 }
@@ -684,14 +834,17 @@ function init() {
 setupEventListeners();
 setupDataRefresh();
 }
-// Public methods
-return {
-init: init,
-openEditModal: openEditModal,
-closeEditModal: closeEditModal,
-closeAddModal: closeAddModal,
-deleteCar: deleteCar
-};
+  // Public methods
+  return {
+    init: init,
+    openEditModal: openEditModal,
+    closeEditModal: closeEditModal,
+    openAddModal: openAddModal,
+    closeAddModal: closeAddModal,
+    deleteCar: deleteCar,
+    toggleEditFields: toggleEditFields,
+    toggleAddFields: toggleAddFields
+  };
 })();
 // Initialize the app when the DOM is ready
 document.addEventListener('DOMContentLoaded', CarManagementApp.init);
