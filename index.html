@@ -285,19 +285,32 @@ const CarManagementApp = (function() {
   userEmail = elements.emailInput.value;
   api.login(userEmail)
     .then(data => {
-      if (data.value && data.value.length > 0) {
-        if (data.value[0].employee) {
-          // User is an employee
-          const employeeData = data.value[0].employee;
+      if (data.value && Array.isArray(data.value) && data.value.length > 0) {
+        if (data.value[0].employee && !data.value[0].CarNumber) {
+          // Response only contains employee data, no cars
+          userCars = [];
           isEmployee = true;
-          userCars = []; // No cars associated yet
+          const employeeData = data.value[0].employee;
           displayEmployeeInfo(employeeData);
+         
         } else {
-          // User has cars associated
-          userCars = data.value;
-          isEmployee = !!userCars[0].employee;
+          // Response contains full car data
+          userCars = data.value.map(car => ({
+            ID: car.ID,
+            CarModel: car.CarModel,
+            CarNumber: car.CarNumber,
+            CarColor: car.CarColor,
+            PersonType: car.PersonType,
+            FullName: car.FullName,
+            PhoneNumber: car.PhoneNumber,
+            Status: car.Status,
+            StartingDate: car.StartingDate,
+            Email: car.Email
+          }));
+          isEmployee = !!data.value[0].employee;
           if (isEmployee) {
-            displayEmployeeInfo(userCars[0].employee);
+            const employeeData = data.value[0].employee;
+            displayEmployeeInfo(employeeData);
           } else {
             displayGuestInfo(userEmail);
           }
@@ -449,7 +462,7 @@ const CarManagementApp = (function() {
     elements.employeeInfo.classList.remove('hidden');
     elements.employeeInfo.innerHTML = `
       <div class="flex items-start p-4 bg-white shadow-md rounded-lg">
-        <img src="${employee.Picture}" alt="${employee.DisplayName}" class="w-20 h-20 rounded-full mr-6 border-2 border-gray-300">
+        <img src="https://www.abra-it.com/wp-content/uploads/2021/12/logo-big.svg" alt="${employee.DisplayName}" class="w-20 h-20 rounded-full mr-6 border-2 border-gray-300">
         <div>
           <h4 class="text-2xl font-semibold text-gray-800">${employee.DisplayName}</h4>
           <p class="text-gray-600 text-md">${employee.JobTitle}</p>
