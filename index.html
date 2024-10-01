@@ -281,29 +281,38 @@ const CarManagementApp = (function() {
 
   // Event Handlers
   function handleLogin(event) {
-    event.preventDefault();
-    userEmail = elements.emailInput.value;
-    api.login(userEmail)
-      .then(data => {
-        if (data.value && data.value.length > 0) {
+  event.preventDefault();
+  userEmail = elements.emailInput.value;
+  api.login(userEmail)
+    .then(data => {
+      if (data.value && data.value.length > 0) {
+        if (data.value[0].employee) {
+          // User is an employee
+          const employeeData = data.value[0].employee;
+          isEmployee = true;
+          userCars = []; // No cars associated yet
+          displayEmployeeInfo(employeeData);
+        } else {
+          // User has cars associated
           userCars = data.value;
-          const employeeData = userCars[0].employee;
-          isEmployee = !!employeeData;
+          isEmployee = !!userCars[0].employee;
           if (isEmployee) {
-            displayEmployeeInfo(employeeData);
+            displayEmployeeInfo(userCars[0].employee);
           } else {
             displayGuestInfo(userEmail);
           }
-        } else {
-          userCars = [];
-          isEmployee = false;
-          displayGuestInfo(userEmail);
-          alert("לא נמצאו רכבים מקושרים לאימייל הזה. אתה מחובר כאורח.");
         }
-        updateUIAfterLogin();
-      })
-      .catch(handleError);
-  }
+      } else {
+        // No data returned
+        userCars = [];
+        isEmployee = false;
+        displayGuestInfo(userEmail);
+        alert("לא נמצאו רכבים מקושרים לאימייל הזה. אתה מחובר כאורח.");
+      }
+      updateUIAfterLogin();
+    })
+    .catch(handleError);
+}
 
   function handleExportExcel() {
     if (userCars.length === 0) {
@@ -365,13 +374,13 @@ const CarManagementApp = (function() {
     );
 
     api.editCar(carId, logChanges)
-      .then(() => {
-        alert('הבקשה לעריכת הרכב נשלחה לאישור.');
-        closeEditModal();
-        refreshCarList();
-      })
-      .catch(handleError);
-  }
+    .then((response) => {
+      alert('פרטי הרכב עודכנו בהצלחה.');
+      closeEditModal();
+      updateDataFromResponse(response);
+    })
+    .catch(handleError);
+}
 
   function handleAddSubmit(event) {
     event.preventDefault();
@@ -412,14 +421,14 @@ const CarManagementApp = (function() {
     };
 
     api.createCar(newCarData)
-      .then(() => {
-        alert('הבקשה להוספת רכב חדש נשלחה לאישור.');
-        closeAddModal();
-        elements.addForm.reset();
-        refreshCarList();
-      })
-      .catch(handleError);
-  }
+    .then((response) => {
+      alert('הרכב החדש נוסף בהצלחה.');
+      closeAddModal();
+      elements.addForm.reset();
+      updateDataFromResponse(response);
+    })
+    .catch(handleError);
+}
 
   // UI Updates
   function updateUIAfterLogin() {
@@ -583,21 +592,40 @@ closeModal('addModal');
 }
 // Car Operations
 function deleteCar(carId) {
-const car = userCars.find(c => c.ID === carId);
-if (!car) {
-alert('הרכב לא נמצא');
-return;
-}
-if (confirm(`האם אתה בטוח שברצונך למחוק את הרכב ${car.CarModel} (${car.CarNumber})?`)) {
-      api.deleteCar(carId, car)
-        .then(() => {
-          alert('הבקשה למחיקת הרכב נשלחה לאישור.');
-          refreshCarList();
-        })
-        .catch(handleError);
-    }
+  const car = userCars.find(c => c.ID === carId);
+  if (!car) {
+    alert('הרכב לא נמצא');
+    return;
   }
-
+  if (confirm(`האם אתה בטוח שברצונך למחוק את הרכב ${car.CarModel} (${car.CarNumber})?`)) {
+    api.deleteCar(carId, car)
+      .then((response) => {
+        alert('הרכב נמחק בהצלחה.');
+        updateDataFromResponse(response);
+      })
+      .catch(handleError);
+  }
+}
+// New function to update data from API response
+function updateDataFromResponse(response) {
+  if (response.value && Array.isArray(response.value)) {
+    userCars = response.value;
+    
+    // Check if the user is an employee
+    isEmployee = userCars.length > 0 && !!userCars[0].employee;
+    
+    if (isEmployee && userCars[0].employee) {
+      displayEmployeeInfo(userCars[0].employee);
+    } else {
+      displayGuestInfo(userEmail);
+    }
+    
+    refreshCarList();
+  } else {
+    console.error('Unexpected response format:', response);
+    alert('אירעה שגיאה בעדכון הנתונים. אנא רענן את הדף ונסה שוב.');
+  }
+}
 function toggleGuestFields(personType, guestFieldsElement) {
 guestFieldsElement.style.display = personType.value === 'Guest' ? 'block' : 'none';
 }
