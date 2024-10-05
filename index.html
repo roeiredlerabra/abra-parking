@@ -466,20 +466,51 @@ function handleLogin(event) {
 }
 
 
-      function handleExportExcel() {
-        if (userCars.length === 0) {
-          alert('אין רכבים לייצוא.');
-          return;
-        }
-        showLoading();
-        setTimeout(() => {
-          const ws = XLSX.utils.json_to_sheet(userCars);
-          const wb = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(wb, ws, "Cars");
-          XLSX.writeFile(wb, "car_list.xlsx");
-          hideLoading();
-        }, 100);
-      }
+function handleExportExcel() {
+  if (userCars.length === 0) {
+    alert('אין רכבים לייצוא.');
+    return;
+  }
+  
+  showLoading();
+  
+  // Define the fields you want to export
+  const fieldsToExport = [
+    { key: 'CarModel', header: 'מודל רכב' },
+    { key: 'CarNumber', header: 'מספר רכב' },
+    { key: 'CarColor', header: 'צבע רכב' },
+    { key: 'PersonType', header: 'סוג אדם' },
+    { key: 'FullName', header: 'שם מלא' },
+    { key: 'PhoneNumber', header: 'מספר טלפון' },
+    { key: 'Status', header: 'סטטוס' },
+    { key: 'StartingDate', header: 'תאריך התחלה' },
+    { key: 'FutureParkingDate', header: 'תאריך חניה עתידי' },
+    { key: 'Reason', header: 'סיבה' }
+  ];
+
+  // Create a new array with only the specified fields
+  const exportData = userCars.map(car => {
+    const exportCar = {};
+    fieldsToExport.forEach(field => {
+      exportCar[field.header] = car[field.key];
+    });
+    return exportCar;
+  });
+
+  // Create a worksheet
+  const ws = XLSX.utils.json_to_sheet(exportData, {
+    header: fieldsToExport.map(field => field.header)
+  });
+
+  // Create a workbook
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Cars");
+
+  // Generate Excel file
+  XLSX.writeFile(wb, "car_list.xlsx");
+
+  hideLoading();
+}
 
       function handleLogout() {
         userCars = [];
