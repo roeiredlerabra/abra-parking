@@ -326,7 +326,9 @@ const CarManagementApp = (function() {
             PhoneNumber: car.PhoneNumber,
             Status: car.Status,
             StartingDate: car.StartingDate,
-            Email: car.Email
+            Email: car.Email,
+            FutureParkingDate: car.FutureParkingDate,
+            Reason:car.Reason
           }));
           isEmployee = !!data.value[0].employee;
           if (isEmployee) {
@@ -529,16 +531,22 @@ function clearValidationErrors() {
     elements.employeeInfo.classList.remove('hidden');
     elements.employeeInfo.innerHTML = `
       <div class="flex items-start p-4 bg-white shadow-md rounded-lg">
-        <img src="https://www.abra-it.com/wp-content/uploads/2021/12/logo-big.svg" alt="${employee.DisplayName}" class="w-20 h-20 rounded-full mr-6 border-2 border-gray-300">
+        <img src="https://www.abra-it.com/wp-content/uploads/2021/12/logo-big.svg" alt="${employee.DisplayName}" 
+          class="w-20 h-20 rounded-full mr-6 border-2 border-gray-300 object-contain">
         <div>
           <h4 class="text-2xl font-semibold text-gray-800">${employee.DisplayName}</h4>
           <p class="text-gray-600 text-md">${employee.JobTitle}</p>
           <p class="text-gray-500 text-sm">${employee.Department}</p>
-          <p class="text-gray-500 text-sm mt-1"> <a href="mailto:${employee.Email}" class="text-blue-600 hover:underline">${employee.Email}</a></p>
+          <p class="text-gray-500 text-sm mt-1"> 
+            <a href="mailto:${employee.Email}" class="text-blue-600 hover:underline">${employee.Email}</a>
+          </p>
         </div>
       </div>
     `;
-  }
+}
+
+
+
 
   function displayGuestInfo(email) {
     elements.employeeInfo.classList.remove('hidden');
@@ -645,6 +653,7 @@ function clearValidationErrors() {
     alert('הרכב לא נמצא');
     return;
   }
+  console.log('Car object:', JSON.stringify(car, null, 2));
 
   document.getElementById('editCarId').value = car.ID;
   document.getElementById('editCarModel').value = car.CarModel;
@@ -653,7 +662,7 @@ function clearValidationErrors() {
   document.getElementById('editPersonType').value = car.PersonType;
   document.getElementById('editFullName').value = car.FullName;
   document.getElementById('editPhoneNumber').value = car.PhoneNumber;
-  document.getElementById('editFutureParkingDate').value = car.FutureParkingDate || '';
+  document.getElementById('editFutureParkingDate').value = car.FutureParkingDate ;
   document.getElementById('editReason').value = car.Reason || '';
   document.getElementById('editStartingDate').value = car.StartingDate || '';
 
@@ -666,7 +675,7 @@ function openAddModal() {
   toggleAddFields();
   openModal('addModal');
 }
-  function toggleEditFields() {
+function toggleEditFields() {
   const personType = elements.editPersonType.value;
   const guestFields = elements.editGuestFields;
   const employeeFields = document.getElementById('editEmployeeFields');
@@ -676,15 +685,15 @@ function openAddModal() {
   guestFields.style.display = personType === 'Guest' ? 'block' : 'none';
   employeeFields.style.display = personType === 'Employee' ? 'block' : 'none';
 
-  if (isEmployee) {
+  if (personType === 'Guest') {
+    futureParkingDateInput.setAttribute('required', '');
+  } else {
     futureParkingDateInput.removeAttribute('required');
+  }
+
+  if (personType === 'Employee') {
     startingDateInput.setAttribute('required', '');
   } else {
-    if (personType === 'Guest') {
-      futureParkingDateInput.setAttribute('required', '');
-    } else {
-      futureParkingDateInput.removeAttribute('required');
-    }
     startingDateInput.removeAttribute('required');
   }
 }
@@ -769,7 +778,9 @@ function updateDataFromResponse(response) {
       PhoneNumber: car.PhoneNumber,
       Status: car.Status,
       StartingDate: car.StartingDate,
-      Email: car.Email
+      Email: car.Email,
+      FutureParkingDate: car.FutureParkingDate,
+      Reason:car.Reason
     }));
 
     // Check if the user is an employee
