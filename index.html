@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,47 +12,101 @@
     body {
       font-family: 'Rubik', sans-serif;
     }
-    .headerstyle{
+
+    .headerstyle {
       background-color: #0e1749;
     }
+
     .modal {
       direction: rtl;
     }
+
     @media (max-width: 640px) {
       .container {
         padding-left: 1rem;
         padding-right: 1rem;
       }
+
       .grid-cols-3 {
         grid-template-columns: repeat(1, minmax(0, 1fr));
       }
-      .md\:col-span-1, .md\:col-span-2 {
+
+      .md\:col-span-1,
+      .md\:col-span-2 {
         grid-column: span 1 / span 1;
       }
+
       .car-details {
         flex-direction: column;
       }
+
       .car-actions {
         margin-top: 1rem;
       }
-      .md:h-6{
+
+      .md:h-6 {
         height: 1.5rem;
       }
     }
+
+    .spinner {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top-color: #3498db;
+      animation: spin 1s ease-in-out infinite;
+      -webkit-animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    @-webkit-keyframes spin {
+      to {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: none; /* Change this from 'flex' to 'none' */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .loading-overlay.visible {
+    display: flex;
+  }
   </style>
 </head>
+
 <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
   <header class="headerstyle text-white shadow-md">
     <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
       <div class="flex items-center mb-4 md:mb-0">
-        <img src="https://www.abra-it.com/wp-content/uploads/2022/01/Abra-logo-FullColor-white-1.svg" alt="ABRA לוגו" class="h-6 md:h-6 ml-4 md:ml-0" style="height: 1.5rem;">
+        <img src="https://www.abra-it.com/wp-content/uploads/2022/01/Abra-logo-FullColor-white-1.svg" alt="ABRA לוגו"
+          class="h-6 md:h-6 ml-4 md:ml-0" style="height: 1.5rem;">
         <h1 class="text-2xl font-bold">מערכת ניהול רכבים</h1>
       </div>
-      <button id="logout-button" class="bg-white text-blue-600 px-4 py-2 rounded-md hidden hover:bg-blue-100 transition duration-300">התנתק</button>
+      <button id="logout-button"
+        class="bg-white text-blue-600 px-4 py-2 rounded-md hidden hover:bg-blue-100 transition duration-300">התנתק</button>
     </div>
   </header>
-  
-  
+
+  <div id="loading-overlay" class="loading-overlay hidden">
+    <div class="spinner"></div>
+  </div>
   <main class="container mx-auto px-4 my-8 flex-grow">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div class="md:col-span-1">
@@ -59,10 +114,15 @@
           <h2 class="text-xl font-semibold mb-4"><i class="fas fa-sign-in-alt mr-2"></i>התחברות למערכת</h2>
           <form id="login-form">
             <div class="mb-4">
-              <label for="email" class="block text-sm font-medium text-gray-700 mb-1"><i class="fas fa-envelope mr-1"></i>כתובת אימייל:</label>
-              <input type="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="email" name="email" required aria-label="כתובת אימייל">
+              <label for="email" class="block text-sm font-medium text-gray-700 mb-1"><i
+                  class="fas fa-envelope mr-1"></i>כתובת אימייל:</label>
+              <input type="email"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                id="email" name="email" required aria-label="כתובת אימייל">
             </div>
-            <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"><i class="fas fa-key mr-2"></i>התחבר</button>
+            <button type="submit"
+              class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"><i
+                class="fas fa-key mr-2"></i>התחבר</button>
           </form>
         </div>
         <div id="employee-info" class="bg-white rounded-lg shadow-md p-6 hidden"></div>
@@ -72,25 +132,29 @@
           <h3 class="text-xl font-semibold mb-4"><i class="fas fa-car mr-2"></i>רכבים מקושרים</h3>
           <ul id="car-items" class="space-y-4 mb-6"></ul>
           <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 gap-4">
-            <button id="add-car" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300">
-                <i class="fas fa-plus mr-2"></i>הוסף רכב חדש
+            <button id="add-car"
+              class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300">
+              <i class="fas fa-plus mr-2"></i>הוסף רכב חדש
             </button>
-            <button id="export-excel" class="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition duration-300">
-                <i class="fas fa-file-excel mr-2"></i>ייצא לאקסל
+            <button id="export-excel"
+              class="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition duration-300">
+              <i class="fas fa-file-excel mr-2"></i>ייצא לאקסל
             </button>
-          </div>       
+          </div>
         </div>
       </div>
     </div>
   </main>
-  
+
 
   <!-- Modal for editing car details -->
-  <div class="fixed z-10 inset-0 overflow-y-auto hidden" id="editModal" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="fixed z-10 inset-0 overflow-y-auto hidden" id="editModal" aria-labelledby="modal-title" role="dialog"
+    aria-modal="true">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-      <div class="inline-block align-bottom bg-white rounded-lg text-right overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div
+        class="inline-block align-bottom bg-white rounded-lg text-right overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
         <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
           <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
             עריכת פרטי רכב
@@ -100,69 +164,93 @@
             <input type="hidden" id="editCarId" name="editCarId">
             <div class="mb-3">
               <label for="editCarModel" class="block text-sm font-medium text-gray-700">מודל רכב:</label>
-              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editCarModel" name="editCarModel" required aria-label="מודל רכב">
+              <input type="text"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                id="editCarModel" name="editCarModel" required aria-label="מודל רכב">
             </div>
             <div class="mb-3">
               <label for="editCarNumber" class="block text-sm font-medium text-gray-700">מספר רכב:</label>
-              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editCarNumber" name="editCarNumber" required aria-label="מספר רכב">
+              <input type="text"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                id="editCarNumber" name="editCarNumber" required aria-label="מספר רכב">
             </div>
             <div class="mb-3">
               <label for="editCarColor" class="block text-sm font-medium text-gray-700">צבע רכב:</label>
-              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editCarColor" name="editCarColor" required aria-label="צבע רכב">
+              <input type="text"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                id="editCarColor" name="editCarColor" required aria-label="צבע רכב">
             </div>
             <div class="mb-3">
               <label for="editPersonType" class="block text-sm font-medium text-gray-700">סוג אדם:</label>
-              <select class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editPersonType" name="editPersonType" required aria-label="סוג אדם">
+              <select
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                id="editPersonType" name="editPersonType" required aria-label="סוג אדם">
                 <option value="Employee">עובד</option>
                 <option value="Guest">אורח</option>
               </select>
             </div>
             <div class="mb-3">
               <label for="editFullName" class="block text-sm font-medium text-gray-700">שם מלא:</label>
-              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editFullName" name="editFullName" required aria-label="שם מלא">
+              <input type="text"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                id="editFullName" name="editFullName" required aria-label="שם מלא">
             </div>
             <div class="mb-3">
               <label for="editPhoneNumber" class="block text-sm font-medium text-gray-700">מספר טלפון:</label>
-              <input type="tel" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editPhoneNumber" name="editPhoneNumber" required aria-label="מספר טלפון">
+              <input type="tel"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                id="editPhoneNumber" name="editPhoneNumber" required aria-label="מספר טלפון">
             </div>
             <div id="editEmployeeFields" class="hidden">
               <div class="mb-3">
                 <label for="editStartingDate" class="block text-sm font-medium text-gray-700">תאריך התחלה:</label>
-                <input type="date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editStartingDate" name="editStartingDate" aria-label="תאריך התחלה">
+                <input type="date"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  id="editStartingDate" name="editStartingDate" aria-label="תאריך התחלה">
               </div>
             </div>
             <div id="editGuestFields" class="hidden">
               <div class="mb-3">
-                <label for="editFutureParkingDate" class="block text-sm font-medium text-gray-700">תאריך חניה עתידי:</label>
-                <input type="date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editFutureParkingDate" name="editFutureParkingDate" aria-label="תאריך חניה עתידי">
+                <label for="editFutureParkingDate" class="block text-sm font-medium text-gray-700">תאריך חניה
+                  עתידי:</label>
+                <input type="date"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  id="editFutureParkingDate" name="editFutureParkingDate" aria-label="תאריך חניה עתידי">
               </div>
               <div class="mb-3">
                 <label for="editReason" class="block text-sm font-medium text-gray-700">סיבה:</label>
-                <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="editReason" name="editReason" aria-label="סיבה">
+                <input type="text"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  id="editReason" name="editReason" aria-label="סיבה">
               </div>
             </div>
           </form>
         </div>
         <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-          <button type="submit" form="editCarForm" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+          <button type="submit" form="editCarForm"
+            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
             שמור שינויים
           </button>
-          <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onclick="CarManagementApp.closeEditModal()">
+          <button type="button"
+            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            onclick="CarManagementApp.closeEditModal()">
             ביטול
           </button>
         </div>
       </div>
     </div>
   </div>
-  
+
 
 
   <!-- Modal for adding a new car -->
-  <div class="fixed z-10 inset-0 overflow-y-auto hidden" id="addModal" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="fixed z-10 inset-0 overflow-y-auto hidden" id="addModal" aria-labelledby="modal-title" role="dialog"
+    aria-modal="true">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-      <div class="inline-block align-bottom bg-white rounded-lg text-right overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div
+        class="inline-block align-bottom bg-white rounded-lg text-right overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
         <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
           <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
             הוספת רכב חדש
@@ -171,54 +259,76 @@
           <form id="addCarForm" class="mt-2">
             <div class="mb-3">
               <label for="addCarModel" class="block text-sm font-medium text-gray-700">מודל רכב:</label>
-              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addCarModel" name="addCarModel" required aria-label="מודל רכב">
+              <input type="text"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                id="addCarModel" name="addCarModel" required aria-label="מודל רכב">
             </div>
             <div class="mb-3">
               <label for="addCarNumber" class="block text-sm font-medium text-gray-700">מספר רכב:</label>
-              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addCarNumber" name="addCarNumber" required aria-label="מספר רכב">
+              <input type="text"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                id="addCarNumber" name="addCarNumber" required aria-label="מספר רכב">
             </div>
             <div class="mb-3">
               <label for="addCarColor" class="block text-sm font-medium text-gray-700">צבע רכב:</label>
-              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addCarColor" name="addCarColor" required aria-label="צבע רכב">
+              <input type="text"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                id="addCarColor" name="addCarColor" required aria-label="צבע רכב">
             </div>
             <div class="mb-3">
               <label for="addPersonType" class="block text-sm font-medium text-gray-700">סוג אדם:</label>
-              <select class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addPersonType" name="addPersonType" required aria-label="סוג אדם">
+              <select
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                id="addPersonType" name="addPersonType" required aria-label="סוג אדם">
                 <option value="Employee">עובד</option>
                 <option value="Guest">אורח</option>
               </select>
             </div>
             <div class="mb-3">
               <label for="addFullName" class="block text-sm font-medium text-gray-700">שם מלא:</label>
-              <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addFullName" name="addFullName" required aria-label="שם מלא">
+              <input type="text"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                id="addFullName" name="addFullName" required aria-label="שם מלא">
             </div>
             <div class="mb-3">
               <label for="addPhoneNumber" class="block text-sm font-medium text-gray-700">מספר טלפון:</label>
-              <input type="tel" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addPhoneNumber" name="addPhoneNumber" required aria-label="מספר טלפון">
+              <input type="tel"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                id="addPhoneNumber" name="addPhoneNumber" required aria-label="מספר טלפון">
             </div>
             <div id="addEmployeeFields" class="hidden">
               <div class="mb-3">
                 <label for="addStartingDate" class="block text-sm font-medium text-gray-700">תאריך התחלה:</label>
-                <input type="date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addStartingDate" name="addStartingDate" aria-label="תאריך התחלה">
+                <input type="date"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  id="addStartingDate" name="addStartingDate" aria-label="תאריך התחלה">
               </div>
             </div>
             <div id="addGuestFields" class="hidden">
               <div class="mb-3">
-                <label for="addFutureParkingDate" class="block text-sm font-medium text-gray-700">תאריך חניה עתידי:</label>
-                <input type="date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addFutureParkingDate" name="addFutureParkingDate" aria-label="תאריך חניה עתידי">
+                <label for="addFutureParkingDate" class="block text-sm font-medium text-gray-700">תאריך חניה
+                  עתידי:</label>
+                <input type="date"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  id="addFutureParkingDate" name="addFutureParkingDate" aria-label="תאריך חניה עתידי">
               </div>
               <div class="mb-3">
                 <label for="addReason" class="block text-sm font-medium text-gray-700">סיבה:</label>
-                <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="addReason" name="addReason" aria-label="סיבה">
+                <input type="text"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  id="addReason" name="addReason" aria-label="סיבה">
               </div>
             </div>
           </form>
         </div>
         <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-          <button type="submit" form="addCarForm" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
+          <button type="submit" form="addCarForm"
+            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
             הוסף רכב
           </button>
-          <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onclick="CarManagementApp.closeAddModal()">
+          <button type="button"
+            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            onclick="CarManagementApp.closeAddModal()">
             ביטול
           </button>
         </div>
@@ -243,67 +353,70 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
   <script>
 
-// Main application module
-const CarManagementApp = (function() {
-  let userCars = [];
-  let userEmail = '';
-  let isEmployee = false;
+    // Main application module
+    const CarManagementApp = (function () {
+      let userCars = [];
+      let userEmail = '';
+      let isEmployee = false;
 
-  const API_URL = 'https://prod-121.westeurope.logic.azure.com:443/workflows/f5fc6e19ccf64ce7b1eea09bbca42e43/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=L15vcTNEVuoCJrm51zz1o1uFGoLE5q0ujf2gfYseFYE';
+      const API_URL = 'https://prod-121.westeurope.logic.azure.com:443/workflows/f5fc6e19ccf64ce7b1eea09bbca42e43/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=L15vcTNEVuoCJrm51zz1o1uFGoLE5q0ujf2gfYseFYE';
 
-  // DOM Elements
-  const elements = {
-    loginForm: document.getElementById('login-form-main'),
-    carList: document.getElementById('car-list'),
-    carItems: document.getElementById('car-items'),
-    addCarButton: document.getElementById('add-car'),
-    exportExcelButton: document.getElementById('export-excel'),
-    logoutButton: document.getElementById('logout-button'),
-    employeeInfo: document.getElementById('employee-info'),
-    emailInput: document.getElementById('email'),
-    editModal: document.getElementById('editModal'),
-    addModal: document.getElementById('addModal'),
-    editForm: document.getElementById('editCarForm'),
-    addForm: document.getElementById('addCarForm'),
-    editPersonType: document.getElementById('editPersonType'),
-    addPersonType: document.getElementById('addPersonType'),
-    editGuestFields: document.getElementById('editGuestFields'),
-    addGuestFields: document.getElementById('addGuestFields')
-  };
+      // DOM Elements
+      const elements = {
+        loginForm: document.getElementById('login-form-main'),
+        carList: document.getElementById('car-list'),
+        carItems: document.getElementById('car-items'),
+        addCarButton: document.getElementById('add-car'),
+        exportExcelButton: document.getElementById('export-excel'),
+        logoutButton: document.getElementById('logout-button'),
+        employeeInfo: document.getElementById('employee-info'),
+        emailInput: document.getElementById('email'),
+        editModal: document.getElementById('editModal'),
+        addModal: document.getElementById('addModal'),
+        editForm: document.getElementById('editCarForm'),
+        addForm: document.getElementById('addCarForm'),
+        editPersonType: document.getElementById('editPersonType'),
+        addPersonType: document.getElementById('addPersonType'),
+        editGuestFields: document.getElementById('editGuestFields'),
+        addGuestFields: document.getElementById('addGuestFields')
+      };
 
-  // Event Listeners
-  function setupEventListeners() {
-    elements.loginForm.addEventListener('submit', handleLogin);
-    elements.addCarButton.addEventListener('click', openAddModal);
-    elements.exportExcelButton.addEventListener('click', handleExportExcel);
-    elements.logoutButton.addEventListener('click', handleLogout);
-    elements.editForm.addEventListener('submit', handleEditSubmit);
-    elements.addForm.addEventListener('submit', handleAddSubmit);
-    elements.editPersonType.addEventListener('change', toggleEditFields);
-    elements.addPersonType.addEventListener('change', toggleAddFields);
-  }
+      // Event Listeners
+      function setupEventListeners() {
+        elements.loginForm.addEventListener('submit', handleLogin);
+        elements.addCarButton.addEventListener('click', openAddModal);
+        elements.exportExcelButton.addEventListener('click', handleExportExcel);
+        elements.logoutButton.addEventListener('click', handleLogout);
+        elements.editForm.addEventListener('submit', handleEditSubmit);
+        elements.addForm.addEventListener('submit', handleAddSubmit);
+        elements.editPersonType.addEventListener('change', toggleEditFields);
+        elements.addPersonType.addEventListener('change', toggleAddFields);
+      }
 
-  // API Calls
-  const api = {
-    login: (email) => apiCall('login', { email }),
-    refresh: () => apiCall('refresh', { email: userEmail }),
-    createCar: (carData) => apiCall('create', { email: userEmail, logChanges: { newCar: carData } }),
-    editCar: (carId, changes) => apiCall('edit', { email: userEmail, carId, logChanges: changes }),
-    deleteCar: (carId, carData) => apiCall('delete', { email: userEmail, carId, logChanges: { deletedCar: carData } })
-  };
+      // API Calls
+      const api = {
+        login: (email) => apiCall('login', { email }),
+        refresh: () => apiCall('refresh', { email: userEmail }),
+        createCar: (carData) => apiCall('create', { email: document.getElementById('email').value, logChanges: { newCar: carData } }),
+        editCar: (carId, changes) => apiCall('edit', { email: userEmail, carId, logChanges: changes }),
+        deleteCar: (carId, carData) => apiCall('delete', { email: userEmail, carId, logChanges: { deletedCar: carData } })
+      };
 
-  function apiCall(action, data) {
-    return fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action, ...data })
-    }).then(response => response.json());
-  }
+      function apiCall(action, data) {
+        return fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action, ...data })
+        }).then(response => response.json());
+      }
 
-  // Event Handlers
-  function handleLogin(event) {
+// Event Handlers
+function handleLogin(event) {
   event.preventDefault();
-  userEmail = elements.emailInput.value;
+  showLoading();
+
+  const userEmail = elements.emailInput.value; // Declare userEmail with const
+
   api.login(userEmail)
     .then(data => {
       if (data.value && Array.isArray(data.value) && data.value.length > 0) {
@@ -313,7 +426,6 @@ const CarManagementApp = (function() {
           isEmployee = true;
           const employeeData = data.value[0].employee;
           displayEmployeeInfo(employeeData);
-         
         } else {
           // Response contains full car data
           userCars = data.value.map(car => ({
@@ -328,9 +440,10 @@ const CarManagementApp = (function() {
             StartingDate: car.StartingDate,
             Email: car.Email,
             FutureParkingDate: car.FutureParkingDate,
-            Reason:car.Reason
+            Reason: car.Reason
           }));
-          isEmployee = !!data.value[0].employee;
+
+          isEmployee = !!data.value[0].employee; // Check if the first entry is an employee
           if (isEmployee) {
             const employeeData = data.value[0].employee;
             displayEmployeeInfo(employeeData);
@@ -342,194 +455,218 @@ const CarManagementApp = (function() {
         // No data returned
         userCars = [];
         isEmployee = false;
+
         displayGuestInfo(userEmail);
         alert("לא נמצאו רכבים מקושרים לאימייל הזה. אתה מחובר כאורח.");
       }
       updateUIAfterLogin();
     })
-    .catch(handleError);
+    .catch(handleError)
+    .finally(hideLoading); // Corrected the position of finally
 }
 
-  function handleExportExcel() {
-    if (userCars.length === 0) {
-      alert('אין רכבים לייצוא.');
-      return;
-    }
-    const ws = XLSX.utils.json_to_sheet(userCars);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Cars");
-    XLSX.writeFile(wb, "car_list.xlsx");
-  }
 
-  function handleLogout() {
-    userCars = [];
-    userEmail = '';
-    isEmployee = false;
-    elements.emailInput.value = '';
-    updateUIAfterLogout();
-  }
+      function handleExportExcel() {
+        if (userCars.length === 0) {
+          alert('אין רכבים לייצוא.');
+          return;
+        }
+        showLoading();
+        setTimeout(() => {
+          const ws = XLSX.utils.json_to_sheet(userCars);
+          const wb = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(wb, ws, "Cars");
+          XLSX.writeFile(wb, "car_list.xlsx");
+          hideLoading();
+        }, 100);
+      }
 
-  function handleEditSubmit(event) {
-    event.preventDefault();
-    
-    const carId = document.getElementById('editCarId').value;
-    const newCarModel = document.getElementById('editCarModel').value;
-    const newCarNumber = document.getElementById('editCarNumber').value;
-    const newCarColor = document.getElementById('editCarColor').value;
-    const newPersonType = document.getElementById('editPersonType').value;
-    const newFullName = document.getElementById('editFullName').value;
-    const newPhoneNumber = document.getElementById('editPhoneNumber').value;
-    const newFutureParkingDate = document.getElementById('editFutureParkingDate').value;
-    const newReason = document.getElementById('editReason').value;
-    const newStartingDate = document.getElementById('editStartingDate').value;
-
-    if (!validateCarNumber(newCarNumber)) {
-      alert('מספר הרכב אינו תקין. אנא הזן מספר רכב חוקי.');
-      return;
-    }
-
-    if (!validatePhoneNumber(newPhoneNumber)) {
-      alert('מספר הטלפון אינו תקין. אנא הזן מספר טלפון חוקי.');
-      return;
-    }
-
-    const oldCar = userCars.find(c => c.ID === parseInt(carId));
-    
-    const changes = {
-      CarModel: newCarModel !== oldCar.CarModel ? { before: oldCar.CarModel, after: newCarModel } : null,
-      CarNumber: newCarNumber !== oldCar.CarNumber ? { before: oldCar.CarNumber, after: newCarNumber } : null,
-      CarColor: newCarColor !== oldCar.CarColor ? { before: oldCar.CarColor, after: newCarColor } : null,
-      PersonType: newPersonType !== oldCar.PersonType ? { before: oldCar.PersonType, after: newPersonType } : null,
-      FullName: newFullName !== oldCar.FullName ? { before: oldCar.FullName, after: newFullName } : null,
-      PhoneNumber: newPhoneNumber !== oldCar.PhoneNumber ? { before: oldCar.PhoneNumber, after: newPhoneNumber } : null,
-      FutureParkingDate: newFutureParkingDate !== oldCar.FutureParkingDate ? { before: oldCar.FutureParkingDate, after: newFutureParkingDate } : null,
-      StartingDate: newStartingDate !== oldCar.StartingDate ? { before: oldCar.StartingDate, after: newStartingDate } : null,
-      Reason: newReason !== oldCar.Reason ? { before: oldCar.Reason, after: newReason } : null
-    };
-
-    const logChanges = Object.fromEntries(
-      Object.entries(changes).filter(([_, value]) => value !== null)
-    );
-
-    api.editCar(carId, logChanges)
-    .then((response) => {
-      alert('פרטי הרכב עודכנו בהצלחה.');
-      closeEditModal();
-      updateDataFromResponse(response);
-    })
-    .catch(handleError);
-}
-function closeEditModal() {
-  // Hide the modal
-  const editModal = document.getElementById('editModal');
-  if (editModal) {
-    editModal.classList.add('hidden');
-  }
-
-  // Reset the form
-  const editForm = document.getElementById('editCarForm');
-  if (editForm) {
-    editForm.reset();
-  }
-
-  // Remove required attributes from dynamic fields
-  const editStartingDate = document.getElementById('editStartingDate');
-  const editFutureParkingDate = document.getElementById('editFutureParkingDate');
-  if (editStartingDate) editStartingDate.removeAttribute('required');
-  if (editFutureParkingDate) editFutureParkingDate.removeAttribute('required');
-
-  // Hide both employee and guest fields
-  const editEmployeeFields = document.getElementById('editEmployeeFields');
-  const editGuestFields = document.getElementById('editGuestFields');
-  if (editEmployeeFields) editEmployeeFields.classList.add('hidden');
-  if (editGuestFields) editGuestFields.classList.add('hidden');
-
-  // Reset the person type select to default
-  const editPersonType = document.getElementById('editPersonType');
-  if (editPersonType) editPersonType.value = 'Employee';
-
-  // Clear any validation messages or styles
-  clearValidationErrors();
+      function handleLogout() {
+        userCars = [];
+        userEmail = '';
+        isEmployee = false;
+        elements.emailInput.value = '';
+        updateUIAfterLogout();
+      }
+      function showLoading() {
+  document.getElementById('loading-overlay').classList.add('visible');
+  document.getElementById('loading-overlay').classList.remove('hidden');
 }
 
-// Helper function to clear validation errors (implement this based on your validation strategy)
-function clearValidationErrors() {
-  // Remove any error messages or styling
-  // For example:
-  const errorMessages = document.querySelectorAll('.error-message');
-  errorMessages.forEach(el => el.remove());
-
-  const errorFields = document.querySelectorAll('.error-field');
-  errorFields.forEach(el => el.classList.remove('error-field'));
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.remove('visible');
+  document.getElementById('loading-overlay').classList.add('hidden');
 }
-  function handleAddSubmit(event) {
-    event.preventDefault();
-    
-    const newCarModel = document.getElementById('addCarModel').value;
-    const newCarNumber = document.getElementById('addCarNumber').value;
-    const newCarColor = document.getElementById('addCarColor').value;
-    const personType = document.getElementById('addPersonType').value;
-    const fullName = document.getElementById('addFullName').value;
-    const phoneNumber = document.getElementById('addPhoneNumber').value;
-    let futureParkingDate = document.getElementById('addFutureParkingDate').value;
-    let reason = document.getElementById('addReason').value;
-    const startingDate = document.getElementById('addStartingDate').value;
+      function handleEditSubmit(event) {
+        event.preventDefault();
+        showLoading();
+        const carId = document.getElementById('editCarId').value;
+        const newCarModel = document.getElementById('editCarModel').value;
+        const newCarNumber = document.getElementById('editCarNumber').value;
+        const newCarColor = document.getElementById('editCarColor').value;
+        const newPersonType = document.getElementById('editPersonType').value;
+        const newFullName = document.getElementById('editFullName').value;
+        const newPhoneNumber = document.getElementById('editPhoneNumber').value;
+        const newFutureParkingDate = document.getElementById('editFutureParkingDate').value;
+        const newReason = document.getElementById('editReason').value;
+        const newStartingDate = document.getElementById('editStartingDate').value;
 
-    if (!validateCarNumber(newCarNumber)) {
-      alert('מספר הרכב אינו תקין. אנא הזן מספר רכב חוקי.');
-      return;
-    }
+        if (!validateCarNumber(newCarNumber)) {
+          alert('מספר הרכב אינו תקין. אנא הזן מספר רכב חוקי.');
+          return;
+        }
 
-    if (!validatePhoneNumber(phoneNumber)) {
-      alert('מספר הטלפון אינו תקין. אנא הזן מספר טלפון חוקי.');
-      return;
-    }
+        if (!validatePhoneNumber(newPhoneNumber)) {
+          alert('מספר הטלפון אינו תקין. אנא הזן מספר טלפון חוקי.');
+          return;
+        }
 
-    if (personType !== 'Guest') {
-      futureParkingDate = null;
-      reason = null;
-    }
+        const oldCar = userCars.find(c => c.ID === parseInt(carId));
 
-    const newCarData = {
-      CarModel: newCarModel,
-      CarNumber: newCarNumber,
-      CarColor: newCarColor,
-      PersonType: personType,
-      FullName: fullName,
-      PhoneNumber: phoneNumber,
-      FutureParkingDate: futureParkingDate,
-      Reason: reason,
-      StartingDate: personType === 'Employee' ? startingDate : null
-    };
+        const changes = {
+          CarModel: newCarModel !== oldCar.CarModel ? { before: oldCar.CarModel, after: newCarModel } : null,
+          CarNumber: newCarNumber !== oldCar.CarNumber ? { before: oldCar.CarNumber, after: newCarNumber } : null,
+          CarColor: newCarColor !== oldCar.CarColor ? { before: oldCar.CarColor, after: newCarColor } : null,
+          PersonType: newPersonType !== oldCar.PersonType ? { before: oldCar.PersonType, after: newPersonType } : null,
+          FullName: newFullName !== oldCar.FullName ? { before: oldCar.FullName, after: newFullName } : null,
+          PhoneNumber: newPhoneNumber !== oldCar.PhoneNumber ? { before: oldCar.PhoneNumber, after: newPhoneNumber } : null,
+          FutureParkingDate: newFutureParkingDate !== oldCar.FutureParkingDate ? { before: oldCar.FutureParkingDate, after: newFutureParkingDate } : null,
+          StartingDate: newStartingDate !== oldCar.StartingDate ? { before: oldCar.StartingDate, after: newStartingDate } : null,
+          Reason: newReason !== oldCar.Reason ? { before: oldCar.Reason, after: newReason } : null
+        };
 
-    api.createCar(newCarData)
+        const logChanges = Object.fromEntries(
+          Object.entries(changes).filter(([_, value]) => value !== null)
+        );
+
+        api.editCar(carId, logChanges)
+          .then((response) => {
+            alert('פרטי הרכב עודכנו בהצלחה.');
+            closeEditModal();
+            updateDataFromResponse(response);
+          })
+          .catch(handleError)
+          .finally(hideLoading);
+      }
+      function closeEditModal() {
+        // Hide the modal
+        const editModal = document.getElementById('editModal');
+        if (editModal) {
+          editModal.classList.add('hidden');
+        }
+
+        // Reset the form
+        const editForm = document.getElementById('editCarForm');
+        if (editForm) {
+          editForm.reset();
+        }
+
+        // Remove required attributes from dynamic fields
+        const editStartingDate = document.getElementById('editStartingDate');
+        const editFutureParkingDate = document.getElementById('editFutureParkingDate');
+        if (editStartingDate) editStartingDate.removeAttribute('required');
+        if (editFutureParkingDate) editFutureParkingDate.removeAttribute('required');
+
+        // Hide both employee and guest fields
+        const editEmployeeFields = document.getElementById('editEmployeeFields');
+        const editGuestFields = document.getElementById('editGuestFields');
+        if (editEmployeeFields) editEmployeeFields.classList.add('hidden');
+        if (editGuestFields) editGuestFields.classList.add('hidden');
+
+        // Reset the person type select to default
+        const editPersonType = document.getElementById('editPersonType');
+        if (editPersonType) editPersonType.value = 'Employee';
+
+        // Clear any validation messages or styles
+        clearValidationErrors();
+      }
+
+      // Helper function to clear validation errors (implement this based on your validation strategy)
+      function clearValidationErrors() {
+        // Remove any error messages or styling
+        // For example:
+        const errorMessages = document.querySelectorAll('.error-message');
+        errorMessages.forEach(el => el.remove());
+
+        const errorFields = document.querySelectorAll('.error-field');
+        errorFields.forEach(el => el.classList.remove('error-field'));
+      }
+      function handleAddSubmit(event) {
+  event.preventDefault();
+  showLoading();
+  
+  // Retrieve the email from the login input
+  const email = document.getElementById('email').value;
+  
+  const newCarModel = document.getElementById('addCarModel').value;
+  const newCarNumber = document.getElementById('addCarNumber').value;
+  const newCarColor = document.getElementById('addCarColor').value;
+  const personType = document.getElementById('addPersonType').value;
+  const fullName = document.getElementById('addFullName').value;
+  const phoneNumber = document.getElementById('addPhoneNumber').value;
+  let futureParkingDate = document.getElementById('addFutureParkingDate').value;
+  let reason = document.getElementById('addReason').value;
+  const startingDate = document.getElementById('addStartingDate').value;
+
+  if (!validateCarNumber(newCarNumber)) {
+    alert('מספר הרכב אינו תקין. אנא הזן מספר רכב חוקי.');
+    hideLoading();
+    return;
+  }
+
+  if (!validatePhoneNumber(phoneNumber)) {
+    alert('מספר הטלפון אינו תקין. אנא הזן מספר טלפון חוקי.');
+    hideLoading();
+    return;
+  }
+
+  if (personType !== 'Guest') {
+    futureParkingDate = null;
+    reason = null;
+  }
+
+  const newCarData = {
+    CarModel: newCarModel,
+    CarNumber: newCarNumber,
+    CarColor: newCarColor,
+    PersonType: personType,
+    FullName: fullName,
+    PhoneNumber: phoneNumber,
+    FutureParkingDate: futureParkingDate,
+    Reason: reason,
+    StartingDate: personType === 'Employee' ? startingDate : null,
+    Email: email  // Use the email retrieved from the login input
+  };
+
+  api.createCar(newCarData)
     .then((response) => {
       alert('הרכב החדש נוסף בהצלחה.');
       closeAddModal();
       elements.addForm.reset();
       updateDataFromResponse(response);
     })
-    .catch(handleError);
+    .catch(handleError)
+    .finally(hideLoading);
 }
 
-  // UI Updates
-  function updateUIAfterLogin() {
-    elements.carList.classList.remove('hidden');
-    elements.loginForm.classList.add('hidden');
-    elements.logoutButton.classList.remove('hidden');
-    refreshCarList();
-  }
+      // UI Updates
+      function updateUIAfterLogin() {
+        elements.carList.classList.remove('hidden');
+        elements.loginForm.classList.add('hidden');
+        elements.logoutButton.classList.remove('hidden');
+        refreshCarList();
+      }
 
-  function updateUIAfterLogout() {
-    elements.carList.classList.add('hidden');
-    elements.employeeInfo.classList.add('hidden');
-    elements.loginForm.classList.remove('hidden');
-    elements.logoutButton.classList.add('hidden');
-  }
+      function updateUIAfterLogout() {
+        elements.carList.classList.add('hidden');
+        elements.employeeInfo.classList.add('hidden');
+        elements.loginForm.classList.remove('hidden');
+        elements.logoutButton.classList.add('hidden');
+      }
 
-  function displayEmployeeInfo(employee) {
-    elements.employeeInfo.classList.remove('hidden');
-    elements.employeeInfo.innerHTML = `
+      function displayEmployeeInfo(employee) {
+        elements.employeeInfo.classList.remove('hidden');
+        elements.employeeInfo.innerHTML = `
       <div class="flex items-start p-4 bg-white shadow-md rounded-lg">
         <img src="https://www.abra-it.com/wp-content/uploads/2021/12/logo-big.svg" alt="${employee.DisplayName}" 
           class="w-20 h-20 rounded-full mr-6 border-2 border-gray-300 object-contain">
@@ -543,14 +680,14 @@ function clearValidationErrors() {
         </div>
       </div>
     `;
-}
+      }
 
 
 
 
-  function displayGuestInfo(email) {
-    elements.employeeInfo.classList.remove('hidden');
-    elements.employeeInfo.innerHTML = `
+      function displayGuestInfo(email) {
+        elements.employeeInfo.classList.remove('hidden');
+        elements.employeeInfo.innerHTML = `
       <div class="flex items-center">
         <i class="fas fa-user-circle text-5xl text-gray-400 mr-4"></i>
         <div>
@@ -559,316 +696,420 @@ function clearValidationErrors() {
         </div>
       </div>
     `;
-  }
+      }
 
-  function refreshCarList() {
-  elements.carItems.innerHTML = '';
-  userCars.forEach(car => {
-    const li = document.createElement('li');
-    li.className = 'bg-white border border-gray-200 rounded-lg p-6 shadow-lg mb-6 transition-transform transform hover:scale-105 duration-300 w-full lg:w-11/12 mx-auto';
-    li.innerHTML = `
-      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
-        <div class="text-gray-800 w-full lg:w-2/3">
-          <strong class="text-xl font-semibold"><i class="fas fa-car-side mr-2 text-blue-500"></i>${car.CarModel}</strong> 
-          <span class="text-lg text-gray-600"> - ${car.CarNumber}</span>
-          <br>
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 text-sm mt-4">
-            <div>
-              <i class="fas fa-info-circle mr-1 text-gray-500"></i> סטטוס: <span class="font-medium">${car.Status}</span>
+      function refreshCarList() {
+        showLoading();
+        elements.carItems.innerHTML = '';
+        userCars.forEach(car => {
+          const li = document.createElement('li');
+          li.style = `
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 16px;
+      transition: all 0.3s ease-in-out;
+      overflow: hidden;
+    `;
+          li.onmouseover = function () {
+            this.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.1)';
+          };
+          li.onmouseout = function () {
+            this.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.05)';
+          };
+          li.innerHTML = `
+      <style>
+        @media (max-width: 768px) {
+          .car-header {
+            flex-direction: column;
+            align-items: flex-start !important;
+          }
+          .car-header-info {
+            margin-top: 8px;
+          }
+          .car-actions {
+            margin-top: 12px;
+            width: 100%;
+          }
+          .car-action-button {
+            padding: 6px 12px !important;
+          }
+        }
+      </style>
+      <div style="padding: 16px;">
+        <div class="car-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div style="display: flex; align-items: center;">
+            <div style="width: 40px; height: 40px; margin-right: 12px; flex-shrink: 0;">
+              <img src="assets/volkswagen-beetle-svgrepo-com.svg" alt="Car Icon" style="width: 100%; height: 100%; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));">
             </div>
-            <div>
-              <i class="fas fa-palette mr-1 text-gray-500"></i> צבע: <span class="font-medium">${car.CarColor}</span>
+            <div class="car-header-info">
+              <h3 style="font-size: 18px; font-weight: 700; color: #2c3e50; margin: 0;">
+                ${car.CarModel}
+                <span style="font-size: 14px; font-weight: 500; color: #7f8c8d; margin-left: 8px;">${car.CarNumber}</span>
+              </h3>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px;">
+                <span style="display: inline-block; background-color: #e3f2fd; color: #1565c0; border-radius: 12px; padding: 2px 8px; font-size: 12px; font-weight: 600;">
+                  ${car.PersonType}
+                </span>
+                <span style="display: inline-block; background-color: #e8f5e9; color: #2e7d32; border-radius: 12px; padding: 2px 8px; font-size: 12px; font-weight: 600;">
+                  ${car.Status}
+                </span>
+              </div>
             </div>
-            <div>
-              <i class="fas fa-user mr-1 text-gray-500"></i> סוג: <span class="font-medium">${car.PersonType}</span>
-            </div>
-            <div>
-              <i class="fas fa-user mr-1 text-gray-500"></i> שם מלא: <span class="font-medium">${car.FullName}</span>
-            </div>
-            <div>
-              <i class="fas fa-phone mr-1 text-gray-500"></i> טלפון: <span class="font-medium">${car.PhoneNumber}</span>
-            </div>
-            ${car.StartingDate ? `
-            <div>
-              <i class="fas fa-calendar-alt mr-1 text-gray-500"></i> תאריך התחלה: <span class="font-medium">${car.StartingDate}</span>
-            </div>
-            ` : ''}
-            ${car.PersonType === 'Guest' && car.FutureParkingDate ? `
-            <div>
-              <i class="fas fa-calendar-check mr-1 text-gray-500"></i> תאריך חניה עתידי: <span class="font-medium">${car.FutureParkingDate}</span>
-            </div>
-            ` : ''}
-            ${car.PersonType === 'Guest' && car.Reason ? `
-            <div>
-              <i class="fas fa-comment mr-1 text-gray-500"></i> סיבה: <span class="font-medium">${car.Reason}</span>
-            </div>
-            ` : ''}
+          </div>
+          <div class="car-actions" style="display: flex; gap: 8px;">
+            <button onclick="CarManagementApp.openEditModal(${car.ID})" class="car-action-button" style="
+              background-color: #3498db;
+              color: white;
+              padding: 6px 12px;
+              border-radius: 6px;
+              cursor: pointer;
+              border: none;
+              font-size: 12px;
+              font-weight: 600;
+              transition: all 0.3s ease;
+            " onmouseover="this.style.backgroundColor = '#2980b9';" onmouseout="this.style.backgroundColor = '#3498db';">
+              <i class="fas fa-edit" style="margin-right: 4px;"></i>ערוך
+            </button>
+            <button onclick="CarManagementApp.deleteCar(${car.ID})" class="car-action-button" style="
+              background-color: #e74c3c;
+              color: white;
+              padding: 6px 12px;
+              border-radius: 6px;
+              cursor: pointer;
+              border: none;
+              font-size: 12px;
+              font-weight: 600;
+              transition: all 0.3s ease;
+            " onmouseover="this.style.backgroundColor = '#c0392b';" onmouseout="this.style.backgroundColor = '#e74c3c';">
+              <i class="fas fa-trash-alt" style="margin-right: 4px;"></i>מחק
+            </button>
           </div>
         </div>
-        <div class="flex space-x-2 w-full lg:w-auto justify-end">
-          <button onclick="CarManagementApp.openEditModal(${car.ID})" class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300 shadow-md">
-            <i class="fas fa-edit"></i>
-          </button>
-          <button onclick="CarManagementApp.deleteCar(${car.ID})" class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition duration-300 shadow-md">
-            <i class="fas fa-trash-alt"></i>
-          </button>
+        <div style="
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          gap: 12px;
+          font-size: 14px;
+          background-color: #f8f9fa;
+          border-radius: 8px;
+          padding: 12px;
+        ">
+          <div style="display: flex; align-items: center;">
+            <i class="fas fa-palette" style="margin-right: 8px; color: #3498db; font-size: 16px;"></i>
+            <div>
+              <span style="font-weight: 600; color: #34495e; display: block; font-size: 12px;">צבע רכב</span>
+              <span style="font-weight: 500; color: #2c3e50;">${car.CarColor}</span>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center;">
+            <i class="fas fa-user" style="margin-right: 8px; color: #3498db; font-size: 16px;"></i>
+            <div>
+              <span style="font-weight: 600; color: #34495e; display: block; font-size: 12px;">שם מלא</span>
+              <span style="font-weight: 500; color: #2c3e50;">${car.FullName}</span>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center;">
+            <i class="fas fa-phone" style="margin-right: 8px; color: #3498db; font-size: 16px;"></i>
+            <div>
+              <span style="font-weight: 600; color: #34495e; display: block; font-size: 12px;">מספר טלפון</span>
+              <span style="font-weight: 500; color: #2c3e50;">${car.PhoneNumber}</span>
+            </div>
+          </div>
+          ${car.StartingDate ? `
+          <div style="display: flex; align-items: center;">
+            <i class="fas fa-calendar-alt" style="margin-right: 8px; color: #3498db; font-size: 16px;"></i>
+            <div>
+              <span style="font-weight: 600; color: #34495e; display: block; font-size: 12px;">תאריך התחלה</span>
+              <span style="font-weight: 500; color: #2c3e50;">${car.StartingDate}</span>
+            </div>
+          </div>
+          ` : ''}
+          ${car.PersonType === 'Guest' && car.FutureParkingDate ? `
+          <div style="display: flex; align-items: center;">
+            <i class="fas fa-calendar-check" style="margin-right: 8px; color: #3498db; font-size: 16px;"></i>
+            <div>
+              <span style="font-weight: 600; color: #34495e; display: block; font-size: 12px;">תאריך חניה עתידי</span>
+              <span style="font-weight: 500; color: #2c3e50;">${car.FutureParkingDate}</span>
+            </div>
+          </div>
+          ` : ''}
         </div>
+        ${car.PersonType === 'Guest' && car.Reason ? `
+        <div style="margin-top: 12px; background-color: #fff3cd; border-radius: 8px; padding: 10px;">
+          <div style="display: flex; align-items: center;">
+            <i class="fas fa-comment" style="margin-right: 8px; color: #d35400; font-size: 16px;"></i>
+            <div>
+              <span style="font-weight: 600; color: #34495e; display: block; font-size: 12px;">סיבה</span>
+              <span style="font-weight: 500; color: #2c3e50; font-size: 14px;">${car.Reason}</span>
+            </div>
+          </div>
+        </div>
+        ` : ''}
       </div>
     `;
-    elements.carItems.appendChild(li);
-  });
+          elements.carItems.appendChild(li);
+        });
 
-  updateAddCarButtonVisibility();
-}
+        updateAddCarButtonVisibility();
+        hideLoading();
+      }
 
 
 
 
-  function updateAddCarButtonVisibility() {
-    const maxCarsMessage = document.getElementById('max-cars-message');
-    if (isEmployee) {
-      if (userCars.length < 2) {
-        elements.addCarButton.classList.remove('hidden');
-        if (maxCarsMessage) maxCarsMessage.classList.add('hidden');
-      } else {
-        elements.addCarButton.classList.add('hidden');
-        if (!maxCarsMessage) {
-          const message = document.createElement('p');
-          message.id = 'max-cars-message';
-          message.textContent = 'הגעת למכסה המקסימלית של הרכבים המשוייכים';
-          message.className = 'text-red-500 mt-2';
-          elements.addCarButton.parentNode.insertBefore(message, elements.addCarButton.nextSibling);
+
+
+      function updateAddCarButtonVisibility() {
+        const maxCarsMessage = document.getElementById('max-cars-message');
+        if (isEmployee) {
+          if (userCars.length < 2) {
+            elements.addCarButton.classList.remove('hidden');
+            if (maxCarsMessage) maxCarsMessage.classList.add('hidden');
+          } else {
+            elements.addCarButton.classList.add('hidden');
+            if (!maxCarsMessage) {
+              const message = document.createElement('p');
+              message.id = 'max-cars-message';
+              message.textContent = 'הגעת למכסה המקסימלית של הרכבים המשוייכים';
+              message.className = 'text-red-500 mt-2';
+              elements.addCarButton.parentNode.insertBefore(message, elements.addCarButton.nextSibling);
+            } else {
+              maxCarsMessage.classList.remove('hidden');
+            }
+          }
         } else {
-          maxCarsMessage.classList.remove('hidden');
+          elements.addCarButton.classList.remove('hidden');
+          if (maxCarsMessage) maxCarsMessage.classList.add('hidden');
         }
       }
-    } else {
-      elements.addCarButton.classList.remove('hidden');
-      if (maxCarsMessage) maxCarsMessage.classList.add('hidden');
-    }
-  }
 
-  // Modal Operations
-  function openModal(modalId) {
-    document.getElementById(modalId).classList.remove('hidden');
-  }
+      // Modal Operations
+      function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+      }
 
-  function closeModal(modalId) {
-    document.getElementById(modalId).classList.add('hidden');
-  }
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+      }
 
-  function openEditModal(carId) {
-  const car = userCars.find(c => c.ID === carId);
-  if (!car) {
-    alert('הרכב לא נמצא');
-    return;
-  }
-  console.log('Car object:', JSON.stringify(car, null, 2));
+      function openEditModal(carId) {
+        const car = userCars.find(c => c.ID === carId);
+        if (!car) {
+          alert('הרכב לא נמצא');
+          return;
+        }
+        console.log('Car object:', JSON.stringify(car, null, 2));
 
-  document.getElementById('editCarId').value = car.ID;
-  document.getElementById('editCarModel').value = car.CarModel;
-  document.getElementById('editCarNumber').value = car.CarNumber;
-  document.getElementById('editCarColor').value = car.CarColor;
-  document.getElementById('editPersonType').value = car.PersonType;
-  document.getElementById('editFullName').value = car.FullName;
-  document.getElementById('editPhoneNumber').value = car.PhoneNumber;
-  document.getElementById('editFutureParkingDate').value = car.FutureParkingDate ;
-  document.getElementById('editReason').value = car.Reason || '';
-  document.getElementById('editStartingDate').value = car.StartingDate || '';
+        document.getElementById('editCarId').value = car.ID;
+        document.getElementById('editCarModel').value = car.CarModel;
+        document.getElementById('editCarNumber').value = car.CarNumber;
+        document.getElementById('editCarColor').value = car.CarColor;
+        document.getElementById('editPersonType').value = car.PersonType;
+        document.getElementById('editFullName').value = car.FullName;
+        document.getElementById('editPhoneNumber').value = car.PhoneNumber;
+        document.getElementById('editFutureParkingDate').value = car.FutureParkingDate;
+        document.getElementById('editReason').value = car.Reason || '';
+        document.getElementById('editStartingDate').value = car.StartingDate || '';
 
-  toggleEditFields();
-  openModal('editModal');
-}
-function openAddModal() {
-  document.getElementById('addPersonType').value = isEmployee ? 'Employee' : 'Guest';
-  document.getElementById('addPersonType').disabled = isEmployee;
-  toggleAddFields();
-  openModal('addModal');
-}
-function toggleEditFields() {
-  const personType = elements.editPersonType.value;
-  const guestFields = elements.editGuestFields;
-  const employeeFields = document.getElementById('editEmployeeFields');
-  const futureParkingDateInput = document.getElementById('editFutureParkingDate');
-  const startingDateInput = document.getElementById('editStartingDate');
+        toggleEditFields();
+        openModal('editModal');
+      }
+      function openAddModal() {
+        document.getElementById('addPersonType').value = isEmployee ? 'Employee' : 'Guest';
+        document.getElementById('addPersonType').disabled = isEmployee;
+        toggleAddFields();
+        openModal('addModal');
+      }
+      function toggleEditFields() {
+        const personType = elements.editPersonType.value;
+        const guestFields = elements.editGuestFields;
+        const employeeFields = document.getElementById('editEmployeeFields');
+        const futureParkingDateInput = document.getElementById('editFutureParkingDate');
+        const startingDateInput = document.getElementById('editStartingDate');
 
-  guestFields.style.display = personType === 'Guest' ? 'block' : 'none';
-  employeeFields.style.display = personType === 'Employee' ? 'block' : 'none';
+        guestFields.style.display = personType === 'Guest' ? 'block' : 'none';
+        employeeFields.style.display = personType === 'Employee' ? 'block' : 'none';
 
-  if (personType === 'Guest') {
-    futureParkingDateInput.setAttribute('required', '');
-  } else {
-    futureParkingDateInput.removeAttribute('required');
-  }
+        if (personType === 'Guest') {
+          futureParkingDateInput.setAttribute('required', '');
+        } else {
+          futureParkingDateInput.removeAttribute('required');
+        }
 
-  if (personType === 'Employee') {
-    startingDateInput.setAttribute('required', '');
-  } else {
-    startingDateInput.removeAttribute('required');
-  }
-}
+        if (personType === 'Employee') {
+          startingDateInput.setAttribute('required', '');
+        } else {
+          startingDateInput.removeAttribute('required');
+        }
+      }
 
-function toggleAddFields() {
-  const personType = elements.addPersonType.value;
-  const guestFields = elements.addGuestFields;
-  const employeeFields = document.getElementById('addEmployeeFields');
-  const futureParkingDateInput = document.getElementById('addFutureParkingDate');
-  const startingDateInput = document.getElementById('addStartingDate');
+      function toggleAddFields() {
+        const personType = elements.addPersonType.value;
+        const guestFields = elements.addGuestFields;
+        const employeeFields = document.getElementById('addEmployeeFields');
+        const futureParkingDateInput = document.getElementById('addFutureParkingDate');
+        const startingDateInput = document.getElementById('addStartingDate');
 
-  guestFields.style.display = personType === 'Guest' ? 'block' : 'none';
-  employeeFields.style.display = personType === 'Employee' ? 'block' : 'none';
+        guestFields.style.display = personType === 'Guest' ? 'block' : 'none';
+        employeeFields.style.display = personType === 'Employee' ? 'block' : 'none';
 
-  if (isEmployee) {
-    futureParkingDateInput.removeAttribute('required');
-    startingDateInput.setAttribute('required', '');
-  } else {
-    if (personType === 'Guest') {
-      futureParkingDateInput.setAttribute('required', '');
-    } else {
-      futureParkingDateInput.removeAttribute('required');
-    }
-    startingDateInput.removeAttribute('required');
-  }
-}
+        if (isEmployee) {
+          futureParkingDateInput.removeAttribute('required');
+          startingDateInput.setAttribute('required', '');
+        } else {
+          if (personType === 'Guest') {
+            futureParkingDateInput.setAttribute('required', '');
+          } else {
+            futureParkingDateInput.removeAttribute('required');
+          }
+          startingDateInput.removeAttribute('required');
+        }
+      }
 
-  function toggleGuestFields(personType, guestFieldsElement) {
-    guestFieldsElement.style.display = personType.value === 'Guest' ? 'block' : 'none';
-  }
+      function toggleGuestFields(personType, guestFieldsElement) {
+        guestFieldsElement.style.display = personType.value === 'Guest' ? 'block' : 'none';
+      }
 
-  function toggleEmployeeFields(personType, employeeFieldsElement) {
-    employeeFieldsElement.style.display = personType.value === 'Employee' ? 'block' : 'none';
-  }
-  
-function closeAddModal() {
-closeModal('addModal');
-}
-// Car Operations
-function deleteCar(carId) {
-  const car = userCars.find(c => c.ID === carId);
-  if (!car) {
-    alert('הרכב לא נמצא');
-    return;
-  }
-  if (confirm(`האם אתה בטוח שברצונך למחוק את הרכב ${car.CarModel} (${car.CarNumber})?`)) {
-    api.deleteCar(carId, car)
-      .then((response) => {
-        alert('הרכב נמחק בהצלחה.');
-        updateDataFromResponse(response);
-      })
-      .catch(handleError);
-  }
-}
-// New function to update data from API response
-function updateDataFromResponse(response) {
-  let carData = [];
+      function toggleEmployeeFields(personType, employeeFieldsElement) {
+        employeeFieldsElement.style.display = personType.value === 'Employee' ? 'block' : 'none';
+      }
 
-  // Check if the response has a 'value' property that is an array
-  if (response && Array.isArray(response.value)) {
-    carData = response.value;
-  } 
-  // If the response itself is an array, use it directly
-  else if (Array.isArray(response)) {
-    carData = response;
-  } 
-  // If we can't identify the structure, log an error
-  else {
-    console.error('Unexpected response format:', response);
-    alert('אירעה שגיאה בעדכון הנתונים. אנא רענן את הדף ונסה שוב.');
-    return;
-  }
+      function closeAddModal() {
+        closeModal('addModal');
+      }
+      // Car Operations
+      function deleteCar(carId) {
+        const car = userCars.find(c => c.ID === carId);
+        if (!car) {
+          alert('הרכב לא נמצא');
+          return;
+        }
+        if (confirm(`האם אתה בטוח שברצונך למחוק את הרכב ${car.CarModel} (${car.CarNumber})?`)) {
+          showLoading();
+          api.deleteCar(carId, car)
+            .then((response) => {
+              alert('הרכב נמחק בהצלחה.');
+              updateDataFromResponse(response);
+            })
+            .catch(handleError)
+            .finally(hideLoading);
+        }
+      }
+      // New function to update data from API response
+      function updateDataFromResponse(response) {
+        let carData = [];
 
-  if (carData.length > 0) {
-    userCars = carData.map(car => ({
-      ID: car.ID,
-      CarModel: car.CarModel,
-      CarNumber: car.CarNumber.toString(), // Convert to string as it might come as a number
-      CarColor: car.CarColor,
-      PersonType: car.PersonType,
-      FullName: car.FullName,
-      PhoneNumber: car.PhoneNumber,
-      Status: car.Status,
-      StartingDate: car.StartingDate,
-      Email: car.Email,
-      FutureParkingDate: car.FutureParkingDate,
-      Reason:car.Reason
-    }));
+        // Check if the response has a 'value' property that is an array
+        if (response && Array.isArray(response.value)) {
+          carData = response.value;
+        }
+        // If the response itself is an array, use it directly
+        else if (Array.isArray(response)) {
+          carData = response;
+        }
+        // If we can't identify the structure, log an error
+        else {
+          console.error('Unexpected response format:', response);
+          alert('אירעה שגיאה בעדכון הנתונים. אנא רענן את הדף ונסה שוב.');
+          return;
+        }
 
-    // Check if the user is an employee
-    isEmployee = !!carData[0].employee;
+        if (carData.length > 0) {
+          userCars = carData.map(car => ({
+            ID: car.ID,
+            CarModel: car.CarModel,
+            CarNumber: car.CarNumber.toString(), // Convert to string as it might come as a number
+            CarColor: car.CarColor,
+            PersonType: car.PersonType,
+            FullName: car.FullName,
+            PhoneNumber: car.PhoneNumber,
+            Status: car.Status,
+            StartingDate: car.StartingDate,
+            Email: car.Email,
+            FutureParkingDate: car.FutureParkingDate,
+            Reason: car.Reason
+          }));
 
-    if (isEmployee && carData[0].employee) {
-      const employeeData = carData[0].employee;
-      displayEmployeeInfo({
-        DisplayName: employeeData.DisplayName,
-        JobTitle: employeeData.JobTitle,
-        Department: employeeData.Department,
-        Email: employeeData.Email
-      });
-    } else {
-      displayGuestInfo(userEmail);
-    }
+          // Check if the user is an employee
+          isEmployee = !!carData[0].employee;
 
-    refreshCarList();
-  } else {
-    console.log('No car data found in the response');
-    alert('לא נמצאו רכבים מקושרים לחשבון זה.');
-  }
-}
+          if (isEmployee && carData[0].employee) {
+            const employeeData = carData[0].employee;
+            displayEmployeeInfo({
+              DisplayName: employeeData.DisplayName,
+              JobTitle: employeeData.JobTitle,
+              Department: employeeData.Department,
+              Email: employeeData.Email
+            });
+          } else {
+            displayGuestInfo(userEmail);
+          }
 
-function toggleGuestFields(personType, guestFieldsElement) {
-guestFieldsElement.style.display = personType.value === 'Guest' ? 'block' : 'none';
-}
-function toggleEditGuestFields() {
-toggleGuestFields(elements.editPersonType, elements.editGuestFields);
-}
-function toggleAddGuestFields() {
-toggleGuestFields(elements.addPersonType, elements.addGuestFields);
-}
-// Utility Functions
-function handleError(error) {
-console.error('Error:', error);
-alert('אירעה שגיאה. אנא נסה שוב.');
-}
-function validateCarNumber(carNumber) {
-return /^\d{7,8}$/.test(carNumber);
-}
-function validatePhoneNumber(phoneNumber) {
-return /^05\d{8}$/.test(phoneNumber);
-}
-// Data Refresh
-function setupDataRefresh() {
-setInterval(() => {
-if (userEmail) {
-api.refresh()
-.then(data => {
-if (data.value && data.value.length > 0) {
-userCars = data.value;
-refreshCarList();
-}
-})
-.catch(error => console.error('Error refreshing data:', error));
-}
-}, 300000); // Refresh every 5 minutes
-}
-// Initialize the app
-function init() {
-setupEventListeners();
-setupDataRefresh();
-}
-  // Public methods
-  return {
-    init: init,
-    openEditModal: openEditModal,
-    closeEditModal: closeEditModal,
-    openAddModal: openAddModal,
-    closeAddModal: closeAddModal,
-    deleteCar: deleteCar,
-    toggleEditFields: toggleEditFields,
-    toggleAddFields: toggleAddFields
-  };
-})();
-// Initialize the app when the DOM is ready
-document.addEventListener('DOMContentLoaded', CarManagementApp.init);
+          refreshCarList();
+        } else {
+          console.log('No car data found in the response');
+          alert('לא נמצאו רכבים מקושרים לחשבון זה.');
+        }
+        hideLoading();
+      }
+
+      function toggleGuestFields(personType, guestFieldsElement) {
+        guestFieldsElement.style.display = personType.value === 'Guest' ? 'block' : 'none';
+      }
+      function toggleEditGuestFields() {
+        toggleGuestFields(elements.editPersonType, elements.editGuestFields);
+      }
+      function toggleAddGuestFields() {
+        toggleGuestFields(elements.addPersonType, elements.addGuestFields);
+      }
+      // Utility Functions
+      function handleError(error) {
+        console.error('Error:', error);
+        alert('אירעה שגיאה. אנא נסה שוב.');
+      }
+      function validateCarNumber(carNumber) {
+        return /^\d{7,8}$/.test(carNumber);
+      }
+      function validatePhoneNumber(phoneNumber) {
+        return /^05\d{8}$/.test(phoneNumber);
+      }
+      // Data Refresh
+      function setupDataRefresh() {
+        setInterval(() => {
+          if (userEmail) {
+            api.refresh()
+              .then(data => {
+                if (data.value && data.value.length > 0) {
+                  userCars = data.value;
+                  refreshCarList();
+                }
+              })
+              .catch(error => console.error('Error refreshing data:', error));
+          }
+        }, 300000); // Refresh every 5 minutes
+      }
+      // Initialize the app
+      function init() {
+        setupEventListeners();
+        setupDataRefresh();
+      }
+      // Public methods
+      return {
+        init: init,
+        openEditModal: openEditModal,
+        closeEditModal: closeEditModal,
+        openAddModal: openAddModal,
+        closeAddModal: closeAddModal,
+        deleteCar: deleteCar,
+        toggleEditFields: toggleEditFields,
+        toggleAddFields: toggleAddFields
+      };
+    })();
+    // Initialize the app when the DOM is ready
+    document.addEventListener('DOMContentLoaded', CarManagementApp.init);
+
   </script>
 </body>
+
 </html>
