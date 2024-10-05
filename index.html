@@ -562,53 +562,63 @@ function clearValidationErrors() {
   }
 
   function refreshCarList() {
-    elements.carItems.innerHTML = '';
-    userCars.forEach(car => {
-      const li = document.createElement('li');
-      li.className = 'bg-white border border-gray-200 rounded-lg p-6 shadow-lg mb-6 transition-transform transform hover:scale-105 duration-300 w-full lg:w-11/12 mx-auto'; // Adjusted width for larger screens
-      li.innerHTML = `
-        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
-          <div class="text-gray-800 w-full lg:w-2/3">
-            <strong class="text-xl font-semibold"><i class="fas fa-car-side mr-2 text-blue-500"></i>${car.CarModel}</strong> 
-            <span class="text-lg text-gray-600"> - ${car.CarNumber}</span>
-            <br>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 text-sm mt-4">
-              <div>
-                <i class="fas fa-info-circle mr-1 text-gray-500"></i> סטטוס: <span class="font-medium">${car.Status}</span>
-              </div>
-              <div>
-                <i class="fas fa-palette mr-1 text-gray-500"></i> צבע: <span class="font-medium">${car.CarColor}</span>
-              </div>
-              <div>
-                <i class="fas fa-user mr-1 text-gray-500"></i> סוג: <span class="font-medium">${car.PersonType}</span>
-              </div>
-              <div>
-                <i class="fas fa-user mr-1 text-gray-500"></i> שם מלא: <span class="font-medium">${car.FullName}</span>
-              </div>
-              <div>
-                <i class="fas fa-phone mr-1 text-gray-500"></i> טלפון: <span class="font-medium">${car.PhoneNumber}</span>
-              </div>
-              ${car.StartingDate ? `
-              <div>
-                <i class="fas fa-calendar-alt mr-1 text-gray-500"></i> תאריך התחלה: <span class="font-medium">${car.StartingDate}</span>
-              </div>
-              ` : ''}
+  elements.carItems.innerHTML = '';
+  userCars.forEach(car => {
+    const li = document.createElement('li');
+    li.className = 'bg-white border border-gray-200 rounded-lg p-6 shadow-lg mb-6 transition-transform transform hover:scale-105 duration-300 w-full lg:w-11/12 mx-auto';
+    li.innerHTML = `
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
+        <div class="text-gray-800 w-full lg:w-2/3">
+          <strong class="text-xl font-semibold"><i class="fas fa-car-side mr-2 text-blue-500"></i>${car.CarModel}</strong> 
+          <span class="text-lg text-gray-600"> - ${car.CarNumber}</span>
+          <br>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 text-sm mt-4">
+            <div>
+              <i class="fas fa-info-circle mr-1 text-gray-500"></i> סטטוס: <span class="font-medium">${car.Status}</span>
             </div>
-          </div>
-          <div class="flex space-x-2 w-full lg:w-auto justify-end">
-            <button onclick="CarManagementApp.openEditModal(${car.ID})" class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300 shadow-md">
-              <i class="fas fa-edit"></i>
-            </button>
-            <button onclick="CarManagementApp.deleteCar(${car.ID})" class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition duration-300 shadow-md">
-              <i class="fas fa-trash-alt"></i>
-            </button>
+            <div>
+              <i class="fas fa-palette mr-1 text-gray-500"></i> צבע: <span class="font-medium">${car.CarColor}</span>
+            </div>
+            <div>
+              <i class="fas fa-user mr-1 text-gray-500"></i> סוג: <span class="font-medium">${car.PersonType}</span>
+            </div>
+            <div>
+              <i class="fas fa-user mr-1 text-gray-500"></i> שם מלא: <span class="font-medium">${car.FullName}</span>
+            </div>
+            <div>
+              <i class="fas fa-phone mr-1 text-gray-500"></i> טלפון: <span class="font-medium">${car.PhoneNumber}</span>
+            </div>
+            ${car.StartingDate ? `
+            <div>
+              <i class="fas fa-calendar-alt mr-1 text-gray-500"></i> תאריך התחלה: <span class="font-medium">${car.StartingDate}</span>
+            </div>
+            ` : ''}
+            ${car.PersonType === 'Guest' && car.FutureParkingDate ? `
+            <div>
+              <i class="fas fa-calendar-check mr-1 text-gray-500"></i> תאריך חניה עתידי: <span class="font-medium">${car.FutureParkingDate}</span>
+            </div>
+            ` : ''}
+            ${car.PersonType === 'Guest' && car.Reason ? `
+            <div>
+              <i class="fas fa-comment mr-1 text-gray-500"></i> סיבה: <span class="font-medium">${car.Reason}</span>
+            </div>
+            ` : ''}
           </div>
         </div>
-      `;
-      elements.carItems.appendChild(li);
-    });
+        <div class="flex space-x-2 w-full lg:w-auto justify-end">
+          <button onclick="CarManagementApp.openEditModal(${car.ID})" class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300 shadow-md">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button onclick="CarManagementApp.deleteCar(${car.ID})" class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition duration-300 shadow-md">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </div>
+      </div>
+    `;
+    elements.carItems.appendChild(li);
+  });
 
-    updateAddCarButtonVisibility();
+  updateAddCarButtonVisibility();
 }
 
 
