@@ -398,8 +398,8 @@
         login: (email) => apiCall('login', { email }),
         refresh: () => apiCall('refresh', { email: userEmail }),
         createCar: (carData) => apiCall('create', { email: document.getElementById('email').value, logChanges: { newCar: carData } }),
-        editCar: (carId, changes) => apiCall('edit', { email: userEmail, carId, logChanges: changes }),
-        deleteCar: (carId, carData) => apiCall('delete', { email: userEmail, carId, logChanges: { deletedCar: carData } })
+        editCar: (carId, changes) => apiCall('edit', { email: document.getElementById('email').value, carId, logChanges: changes }),
+        deleteCar: (carId, carData) => apiCall('delete', { email: document.getElementById('email').value, carId, logChanges: { deletedCar: carData } })
       };
 
       function apiCall(action, data) {
