@@ -633,22 +633,26 @@ const CarManagementApp = (function () {
   }
 
   function displayEmployeeInfo(employee) {
-    safeToggleClass(elements.employeeInfo, 'hidden', false);
-    elements.employeeInfo.innerHTML = `
-      <div class="flex items-start p-4 bg-white shadow-md rounded-lg">
-        <img src="https://www.abra-it.com/wp-content/uploads/2021/12/logo-big.svg" alt="${employee.DisplayName}" 
-          class="w-20 h-20 rounded-full mr-6 border-2 border-gray-300 object-contain">
-        <div>
-          <h4 class="text-2xl font-semibold text-gray-800">${employee.DisplayName}</h4>
-          <p class="text-gray-600 text-md">${employee.JobTitle}</p>
-          <p class="text-gray-500 text-sm">${employee.Department}</p>
-          <p class="text-gray-500 text-sm mt-1"> 
-            <a href="mailto:${employee.Email}" class="text-blue-600 hover:underline">${employee.Email}</a>
-          </p>
-        </div>
+  safeToggleClass(elements.employeeInfo, 'hidden', false);
+  elements.employeeInfo.innerHTML = `
+    <div class="flex items-start p-4 bg-white shadow-md rounded-lg">
+      <img src="https://www.abra-it.com/wp-content/uploads/2021/12/logo-big.svg" alt="${employee.DisplayName}" 
+        class="w-20 h-20 rounded-full mr-6 border-2 border-gray-300 object-contain">
+      <div class="flex-1" dir="ltr">
+        <h4 class="text-2xl font-semibold text-gray-800">${employee.DisplayName}</h4>
+        <p class="text-gray-600 text-md">${employee.JobTitle}</p>
+        <p class="text-gray-500 text-sm">${employee.Department}</p>
+        <p class="text-gray-500 text-sm mt-1"> 
+          <a href="mailto:${employee.Email}" class="text-blue-600 hover:underline">${employee.Email}</a>
+        </p>
       </div>
-    `;
-  }
+    </div>
+    
+  `;
+}
+
+
+
 
   function displayGuestInfo(email) {
     safeToggleClass(elements.employeeInfo, 'hidden', false);
