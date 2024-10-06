@@ -664,104 +664,132 @@ const CarManagementApp = (function () {
   }
 
   function refreshCarList() {
-    showLoading();
-    if (elements.carItems) {
-      elements.carItems.innerHTML = '';
-      userCars.forEach(car => {
-        const li = document.createElement('li');
-        li.className = 'bg-white rounded-lg shadow-md p-4 mb-4 transition-all duration-300 hover:shadow-lg';
-        li.innerHTML = `
-  <div class="p-3 mb-3 bg-white rounded-lg shadow-sm border border-gray-200">
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-lg font-semibold text-gray-800 flex items-center">
-        <i class="fas fa-car mr-2 text-blue-500"></i>${car.FullName}
-      </h3>
-      <div class="flex items-center space-x-2">
-        <span class="text-sm font-bold text-gray-700 bg-gray-100 py-1 px-2 rounded-full">
-          <i class="fas fa-hashtag mr-1 text-blue-500"></i>${car.CarNumber}
-        </span>
-        <span class="text-xs font-medium py-1 px-2 rounded-full flex items-center
-          ${car.Status === 'אושר' ? 'bg-green-100 text-green-700' : ''}
-          ${car.Status === 'ממתין לעדכון' ? 'bg-yellow-100 text-yellow-700' : ''}
-          ${car.Status === 'ממתין למחיקה' ? 'bg-red-100 text-red-700' : ''}
-          ${car.Status === 'ממתין להוספה' ? 'bg-blue-100 text-blue-700' : ''}">
-          <i class="mr-1 ${
-            car.Status === 'אושר' ? 'fas fa-check-circle' :
-            car.Status === 'ממתין לעדכון' ? 'fas fa-clock' :
-            car.Status === 'ממתין למחיקה' ? 'fas fa-trash-alt' :
-            car.Status === 'ממתין להוספה' ? 'fas fa-plus-circle' :
-            'fas fa-question-circle'
-          }"></i>
-          ${car.Status}
-        </span>
-      </div>
-    </div>
+  showLoading();
+  if (elements.carItems) {
+    elements.carItems.innerHTML = '';
+    
+    // Group cars by type
+    const employeeCars = userCars.filter(car => car.PersonType === 'Employee');
+    const guestCars = userCars.filter(car => car.PersonType === 'Guest');
 
-    <div class="text-sm ${car.PersonType === 'Employee' ? 'bg-green-50 border-green-200' : 'bg-blue-50 border-blue-200'} p-2 rounded-md border">
-      <h4 class="text-base font-semibold ${car.PersonType === 'Employee' ? 'text-green-700' : 'text-blue-700'} mb-2">
-        <i class="fas ${car.PersonType === 'Employee' ? 'fa-user-tie' : 'fa-user-friends'} mr-1"></i>
-        ${car.PersonType === 'Employee' ? 'פרטי עובד' : 'פרטי אורח'}
-      </h4>
-      <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-gray-700">
-        <div>
-          <span class="font-medium mr-1">טלפון:</span>
-          <span title="טלפון">
-            <i class="fas fa-phone-alt mr-1 ${car.PersonType === 'Employee' ? 'text-green-600' : 'text-blue-600'}"></i>
-            ${car.PhoneNumber}
-          </span>
-        </div>
-        <div>
-          <span class="font-medium mr-1">סוג:</span>
-          <span title="סוג">
-            <i class="fas fa-id-badge mr-1 ${car.PersonType === 'Employee' ? 'text-green-600' : 'text-blue-600'}"></i>
-            ${car.PersonType}
-          </span>
-        </div>
-        ${car.PersonType === 'Employee' ? `
-          <div>
-            <span class="font-medium mr-1">תאריך התחלה:</span>
-            <span title="תאריך התחלה">
-              <i class="fas fa-calendar-alt mr-1 text-green-600"></i>
-              ${car.StartingDate || 'לא צוין'}
+    // Function to create car HTML
+    const createCarHTML = (car) => `
+      <div class="p-3 mb-3 bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="flex justify-between items-center mb-2">
+          <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+            <i class="fas fa-car mr-2 text-blue-500"></i>${car.FullName}
+          </h3>
+          <div class="flex items-center space-x-2">
+            <span class="text-sm font-bold text-gray-700 bg-gray-100 py-1 px-2 rounded-full">
+              <i class="fas fa-hashtag mr-1 text-blue-500"></i>${car.CarNumber}
             </span>
+            <span class="text-xs font-medium py-1 px-2 rounded-full flex items-center
+              ${car.Status === 'אושר' ? 'bg-green-100 text-green-700' : ''}
+              ${car.Status === 'ממתין לעדכון' ? 'bg-yellow-100 text-yellow-700' : ''}
+              ${car.Status === 'ממתין למחיקה' ? 'bg-red-100 text-red-700' : ''}
+              ${car.Status === 'ממתין להוספה' ? 'bg-blue-100 text-blue-700' : ''}">
+              <i class="mr-1 ${
+                car.Status === 'אושר' ? 'fas fa-check-circle' :
+                car.Status === 'ממתין לעדכון' ? 'fas fa-clock' :
+                car.Status === 'ממתין למחיקה' ? 'fas fa-trash-alt' :
+                car.Status === 'ממתין להוספה' ? 'fas fa-plus-circle' :
+                'fas fa-question-circle'
+              }"></i>
+              ${car.Status}
+            </span>
+          </div>
+        </div>
+
+        <div class="text-sm ${car.PersonType === 'Employee' ? 'bg-green-50 border-green-200' : 'bg-blue-50 border-blue-200'} p-2 rounded-md border">
+          <h4 class="text-base font-semibold ${car.PersonType === 'Employee' ? 'text-green-700' : 'text-blue-700'} mb-2">
+            <i class="fas ${car.PersonType === 'Employee' ? 'fa-user-tie' : 'fa-user-friends'} mr-1"></i>
+            ${car.PersonType === 'Employee' ? 'פרטי עובד' : 'פרטי אורח'}
+          </h4>
+          <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-gray-700">
+            <div>
+              <span class="font-medium mr-1">טלפון:</span>
+              <span title="טלפון">
+                <i class="fas fa-phone-alt mr-1 ${car.PersonType === 'Employee' ? 'text-green-600' : 'text-blue-600'}"></i>
+                ${car.PhoneNumber}
+              </span>
+            </div>
+            <div>
+              <span class="font-medium mr-1">סוג:</span>
+              <span title="סוג">
+                <i class="fas fa-id-badge mr-1 ${car.PersonType === 'Employee' ? 'text-green-600' : 'text-blue-600'}"></i>
+                ${car.PersonType}
+              </span>
+            </div>
+            ${car.PersonType === 'Employee' ? `
+              <div>
+                <span class="font-medium mr-1">תאריך התחלה:</span>
+                <span title="תאריך התחלה">
+                  <i class="fas fa-calendar-alt mr-1 text-green-600"></i>
+                  ${car.StartingDate || 'לא צוין'}
+                </span>
+              </div>
+            ` : `
+              <div>
+                <span class="font-medium mr-1">תאריך אירוח:</span>
+                <span title="תאריך אירוח">
+                  <i class="fas fa-calendar-day mr-1 text-blue-600"></i>
+                  ${car.GuestDate || 'לא צוין'}
+                </span>
+              </div>
+              <div>
+                <span class="font-medium mr-1">שעות אירוח:</span>
+                <span title="שעות אירוח">
+                  <i class="fas fa-clock mr-1 text-blue-600"></i>
+                  ${car.GuestHoursFrom || ''} - ${car.GuestHoursTo || ''}
+                </span>
+              </div>
+            `}
+          </div>
+        </div>
+
+        ${car.Status === 'אושר' ? `
+          <div class="mt-2 flex justify-end space-x-2">
+            <button onclick="CarManagementApp.openEditModal(${car.ID})" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition duration-150 ease-in-out flex items-center text-sm">
+              <i class="fas fa-edit mr-1"></i> ערוך
+            </button>
+            <button onclick="CarManagementApp.deleteCar(${car.ID})" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition duration-150 ease-in-out flex items-center text-sm">
+              <i class="fas fa-trash-alt mr-1"></i> מחק
+            </button>
           </div>
         ` : `
-          <div>
-            <span class="font-medium mr-1">תאריך אירוח:</span>
-            <span title="תאריך אירוח">
-              <i class="fas fa-calendar-day mr-1 text-blue-600"></i>
-              ${car.GuestDate || 'לא צוין'}
-            </span>
-          </div>
-          <div>
-            <span class="font-medium mr-1">שעות אירוח:</span>
-            <span title="שעות אירוח">
-              <i class="fas fa-clock mr-1 text-blue-600"></i>
-              ${car.GuestHoursFrom || ''} - ${car.GuestHoursTo || ''}
-            </span>
+          <div class="mt-2 text-center">
+            <p class="text-sm text-gray-600">לא ניתן לערוך או למחוק רכב זה כרגע.</p>
           </div>
         `}
       </div>
-    </div>
+    `;
 
-    <div class="mt-2 flex justify-end space-x-2">
-      <button onclick="CarManagementApp.openEditModal(${car.ID})" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition duration-150 ease-in-out flex items-center text-sm">
-        <i class="fas fa-edit mr-1"></i> ערוך
-      </button>
-      <button onclick="CarManagementApp.deleteCar(${car.ID})" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition duration-150 ease-in-out flex items-center text-sm">
-        <i class="fas fa-trash-alt mr-1"></i> מחק
-      </button>
-    </div>
-  </div>
-`;
-
-        elements.carItems.appendChild(li);
-      });
+    // Create and append employee cars group if exists
+    if (employeeCars.length > 0) {
+      const employeeGroup = document.createElement('div');
+      employeeGroup.className = 'mb-6';
+      employeeGroup.innerHTML = `
+        <h2 class="text-xl font-bold mb-3 text-gray-800">רכבי עובד</h2>
+        ${employeeCars.map(createCarHTML).join('')}
+      `;
+      elements.carItems.appendChild(employeeGroup);
     }
 
-    updateAddCarButtonsVisibility();
-    hideLoading();
+    // Create and append guest cars group if exists
+    if (guestCars.length > 0) {
+      const guestGroup = document.createElement('div');
+      guestGroup.className = 'mb-6';
+      guestGroup.innerHTML = `
+        <h2 class="text-xl font-bold mb-3 text-gray-800">רכבי אורח</h2>
+        ${guestCars.map(createCarHTML).join('')}
+      `;
+      elements.carItems.appendChild(guestGroup);
+    }
   }
+
+  updateAddCarButtonsVisibility();
+  hideLoading();
+}
 
   function updateAddCarButtonsVisibility() {
     const employeeCarsCount = userCars.filter(car => car.PersonType === 'Employee').length;
