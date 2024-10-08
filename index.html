@@ -119,8 +119,17 @@
           class="h-6 md:h-6 ml-4 md:ml-0" style="height: 1.5rem;">
         <h1 class="text-2xl font-bold">מערכת ניהול רכבים</h1>
       </div>
-      <button id="logout-button"
-        class="bg-white text-blue-600 px-4 py-2 rounded-md hidden hover:bg-blue-100 transition duration-300">התנתק</button>
+      <div class="flex items-center">
+        <button id="refresh-button" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600 transition duration-300 hidden text-sm md:text-base flex items-center">
+          <i class="fas fa-sync-alt mr-2"></i>
+          <span>רענן נתונים</span>
+        </button>
+        <div class="w-2 md:w-4"></div> <!-- Spacer -->
+        <button id="logout-button" class="bg-white text-blue-600 px-3 py-2 rounded-md hover:bg-blue-100 transition duration-300 hidden text-sm md:text-base flex items-center">
+          <i class="fas fa-sign-out-alt mr-2"></i>
+          <span>התנתק</span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -396,7 +405,8 @@ const CarManagementApp = (function () {
     editGuestFields: document.querySelector('#editGuestFields'),
     addGuestFields: document.querySelector('#addGuestFields'),
     editEmployeeFields: document.querySelector('#editEmployeeFields'),
-    addEmployeeFields: document.querySelector('#addEmployeeFields')
+    addEmployeeFields: document.querySelector('#addEmployeeFields'),
+    refreshButton: document.querySelector('#refresh-button')
   };
 
   // API Calls
@@ -644,15 +654,19 @@ const CarManagementApp = (function () {
     safeToggleClass(elements.loginForm, 'hidden', true);
     safeToggleClass(elements.logoutButton, 'hidden', false);
     safeToggleClass(elements.carManagementButtons, 'hidden', false);
+    safeToggleClass(elements.refreshButton, 'hidden', false);
     updateAddCarButtonsVisibility();
     refreshCarList();
   }
-
+  function handleRefresh() {
+      refreshUserData();
+    }
   function updateUIAfterLogout() {
     safeToggleClass(elements.carList, 'hidden', true);
     safeToggleClass(elements.employeeInfo, 'hidden', true);
     safeToggleClass(elements.loginForm, 'hidden', false);
     safeToggleClass(elements.logoutButton, 'hidden', true);
+    safeToggleClass(elements.refreshButton, 'hidden', true);
     safeToggleClass(elements.carManagementButtons, 'hidden', true);
   }
 
@@ -1131,6 +1145,7 @@ function toggleAddFields() {
     elements.addForm.addEventListener('submit', handleAddSubmit);
     elements.editPersonType.addEventListener('change', toggleEditFields);
     elements.addPersonType.addEventListener('change', toggleAddFields);
+    elements.refreshButton.addEventListener('click', handleRefresh);
 
     // Add event listeners for modal close buttons if they exist
     const closeModalButtons = document.querySelectorAll('[data-close-modal]');
@@ -1197,7 +1212,8 @@ function toggleAddFields() {
     closeAddModal: closeAddModal,
     deleteCar: deleteCar,
     toggleEditFields: toggleEditFields,
-    toggleAddFields: toggleAddFields
+    toggleAddFields: toggleAddFields,
+    refreshUserData: refreshUserData
   };
 })();
 
