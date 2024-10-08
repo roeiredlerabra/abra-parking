@@ -150,6 +150,7 @@
                   <th class="py-3 px-4 text-right">סוג אדם</th>
                   <th class="py-3 px-4 text-right">סטטוס</th>
                   <th class="py-3 px-4 text-right">אימייל</th>
+                  <th class="py-3 px-4 text-right">תאריך התחלה</th>
                   <th class="py-3 px-4 text-right">תאריך אירוח</th>
                   <th class="py-3 px-4 text-right">שעת התחלה</th>
                   <th class="py-3 px-4 text-right">שעת סיום</th>
@@ -338,6 +339,7 @@ async handleLogin(e) {
         <td class="py-3 px-4 border-b">${request.PersonType}</td>
         <td class="py-3 px-4 border-b"><span class="px-2 py-1 rounded-full text-sm ${statusColorClass}">${request.Status}</span></td>
         <td class="py-3 px-4 border-b">${request.Email}</td>
+                <td class="py-3 px-4 border-b">${request.StartingDate}</td>
         <td class="py-3 px-4 border-b">${request.GuestDate || '-'}</td>
         <td class="py-3 px-4 border-b">${request.GuestHoursFrom || '-'}</td>
         <td class="py-3 px-4 border-b">${request.GuestHoursTo || '-'}</td>
@@ -376,6 +378,7 @@ async handleLogin(e) {
             PersonType: request.PersonType,
             Status: request.Status,
             Email: request.Email,
+            StartingDate: request.StartingDate || null,
             GuestDate: request.GuestDate || null,
             GuestHoursFrom: request.GuestHoursFrom || null,
             GuestHoursTo: request.GuestHoursTo || null
