@@ -154,13 +154,13 @@
         <div id="car-list" class="bg-white rounded-lg shadow-md p-6 hidden">
           <h3 class="text-xl font-semibold mb-4"><i class="fas fa-car mr-2"></i>רכבים מקושרים</h3>
           <ul id="car-items" class="space-y-4 mb-6"></ul>
-          <div id="car-management-buttons" class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
-            <div id="add-car-buttons" class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
+          <div id="car-management-buttons" class="flex flex-col gap-4 md:flex-row">
+            <div id="add-car-buttons" class="flex flex-col gap-2 md:flex-row">
               <button id="add-car-employee" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300">
-                <i class="fas fa-plus mr-2"></i>הוסף רכב עובד
+                <i class="fas fa-plus mr-2"></i><span class="ml-2">הוסף רכב עובד</span>
               </button>
               <button id="add-car-guest" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300">
-                <i class="fas fa-plus mr-2"></i>הוסף רכב אורח
+                <i class="fas fa-plus mr-2"></i><span class="ml-2">הוסף רכב אורח</span>
               </button>
             </div>
             <button id="export-excel" class="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition duration-300">
@@ -169,6 +169,7 @@
           </div>
           <p id="employee-car-limit-message" class="text-red-500 mt-2 hidden">הגעת למכסה המקסימלית של רכבי עובד</p>
         </div>
+        
       </div>
     </div>
   </main>
@@ -857,25 +858,52 @@ const CarManagementApp = (function () {
   }
 
   function openEditModal(carId) {
-    const car = userCars.find(c => c.ID === carId);
-    if (!car) {
-      alert('הרכב לא נמצא');
-      return;
-    }
-
-    document.getElementById('editCarId').value = car.ID;
-    document.getElementById('editFullName').value = car.FullName;
-    document.getElementById('editCarNumber').value = car.CarNumber;
-    document.getElementById('editPhoneNumber').value = car.PhoneNumber;
-    document.getElementById('editPersonType').value = car.PersonType;
-    document.getElementById('editStartingDate').value = car.StartingDate || '';
-    document.getElementById('editGuestDate').value = car.GuestDate || '';
-    document.getElementById('editGuestHoursFrom').value = car.GuestHoursFrom || '';
-    document.getElementById('editGuestHoursTo').value = car.GuestHoursTo || '';
-
-    toggleEditFields();
-    openModal('editModal');
+  const car = userCars.find(c => c.ID === carId);
+  if (!car) {
+    alert('הרכב לא נמצא');
+    return;
   }
+
+  document.getElementById('editCarId').value = car.ID;
+  document.getElementById('editFullName').value = car.FullName;
+  document.getElementById('editCarNumber').value = car.CarNumber;
+  document.getElementById('editPhoneNumber').value = car.PhoneNumber;
+  document.getElementById('editPersonType').value = car.PersonType;
+  document.getElementById('editStartingDate').value = car.StartingDate || '';
+  document.getElementById('editGuestDate').value = car.GuestDate || '';
+  document.getElementById('editGuestHoursFrom').value = car.GuestHoursFrom || '';
+  document.getElementById('editGuestHoursTo').value = car.GuestHoursTo || '';
+
+  const editPersonTypeSelect = document.getElementById('editPersonType');
+  
+  // Clear existing options
+  editPersonTypeSelect.innerHTML = '';
+
+  if (isEmployee) {
+    const employeeCarsCount = userCars.filter(c => c.PersonType === 'Employee').length;
+    
+    // If the current car is an Employee car, we don't count it towards the limit
+    const adjustedEmployeeCarsCount = car.PersonType === 'Employee' ? employeeCarsCount - 1 : employeeCarsCount;
+
+    if (adjustedEmployeeCarsCount >= 2) {
+      // Only add Guest option
+      editPersonTypeSelect.appendChild(new Option('אורח', 'Guest'));
+    } else {
+      // Add both options
+      editPersonTypeSelect.appendChild(new Option('עובד', 'Employee'));
+      editPersonTypeSelect.appendChild(new Option('אורח', 'Guest'));
+    }
+  } else {
+    // For non-employees, only show Guest option
+    editPersonTypeSelect.appendChild(new Option('אורח', 'Guest'));
+  }
+
+  // Set the current value
+  editPersonTypeSelect.value = car.PersonType;
+
+  toggleEditFields();
+  openModal('editModal');
+}
 
   function openAddModal(type) {
     currentAddCarType = type;
