@@ -578,7 +578,7 @@ const CarManagementApp = (function () {
 
     api.editCar(carId, logChanges)
       .then((response) => {
-        alert('פרטי הרכב עודכנו בהצלחה.');
+        alert('הבקשה לעדכון נשלחה בהצלחה');
         closeEditModal();
         updateDataFromResponse(response);
       })
@@ -638,7 +638,7 @@ const CarManagementApp = (function () {
 
     api.createCar(newCarData)
       .then((response) => {
-        alert('הרכב החדש נוסף בהצלחה.');
+        alert('הבקשה להוספה נשלחה בהצלחה');
         closeAddModal();
         elements.addForm.reset();
         updateDataFromResponse(response);
@@ -1007,7 +1007,7 @@ function toggleAddFields() {
       showLoading();
       api.deleteCar(carId, car)
         .then((response) => {
-          alert('הרכב נמחק בהצלחה.');
+          alert('הבקשה למחיקה נשלחה בהצלחה');
           updateDataFromResponse(response);
         })
         .catch(handleError)
