@@ -111,12 +111,13 @@
 </head>
 
 <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
-  <header class="headerstyle text-white shadow-md">
+  <header class="headerstyle text-white shadow-md"> 
     <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
       <div class="flex items-center mb-4 md:mb-0">
-        <img src="https://www.abra-it.com/wp-content/uploads/2022/01/Abra-logo-FullColor-white-1.svg" alt="ABRA לוגו"
-          class="h-6 md:h-6 ml-4 md:ml-0" style="height: 1.5rem;">
-        <h1 class="text-2xl font-bold">מערכת ניהול רכבים</h1>
+        <img src="Assets/Microsoft_icon.svg.png" alt="Microsoft Icon" class="h-6 md:h-6 ml-4 md:ml-0" style="height: 1.5rem;">
+        <div class="hidden md:block w-4 md:w-6"></div> <!-- Spacer visible only on desktop -->
+        <img src="https://www.abra-it.com/wp-content/uploads/2022/01/Abra-logo-FullColor-white-1.svg" alt="ABRA לוגו" class="h-6 md:h-6" style="height: 1.5rem;">
+        <h1 class="text-2xl font-bold ml-4">מערכת ניהול רכבים</h1>
       </div>
       <div class="flex items-center">
         <button id="refresh-button" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600 transition duration-300 hidden text-sm md:text-base flex items-center">
@@ -131,6 +132,8 @@
       </div>
     </div>
   </header>
+  
+  
 
   <div id="loading-overlay" class="loading-overlay hidden">
     <div class="spinner"></div>
