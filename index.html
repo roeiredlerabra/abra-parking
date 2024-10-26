@@ -112,6 +112,28 @@
         max-width: 500px;
       }
     }
+    .license-plate-tooltip {
+      display: none;
+      position: absolute;
+      top: -100%;
+      left: 0;
+      z-index: 10;
+    }
+    
+    .license-container:hover .license-plate-tooltip {
+      display: block;
+    }
+    
+    .il-flag {
+      background: linear-gradient(
+        to bottom,
+        white 20%,
+        #0038b8 20% 40%,
+        white 40% 60%,
+        #0038b8 60% 80%,
+        white 80%
+      );
+    }
   </style>
 </head>
 
@@ -719,7 +741,23 @@
       </div>
     `;
       }
-
+      function formatLicensePlate(number) {
+  // Handle null, undefined, empty string
+  if (!number) return "";
+  
+  const numStr = number.toString().trim();
+  
+  // Handle non-numeric input (remove any non-digit characters)
+  const cleanNum = numStr.replace(/\D/g, '');
+  
+  if(cleanNum.length === 7) {
+    return `${cleanNum.slice(0,2)}-${cleanNum.slice(2,5)}-${cleanNum.slice(5)}`;
+  }
+  if(cleanNum.length === 8) {
+    return `${cleanNum.slice(0,3)}-${cleanNum.slice(3,5)}-${cleanNum.slice(5)}`;
+  }
+  return cleanNum;
+}
       function refreshCarList() {
         showLoading();
         if (elements.carItems) {
@@ -737,9 +775,13 @@
             <i class="fas fa-car mr-2 text-blue-500"></i>${car.FullName}
           </h3>
           <div class="flex items-center space-x-2">
-            <span class="text-sm font-bold text-gray-700 bg-gray-100 py-1 px-2 rounded-full">
-              <i class="fas fa-hashtag mr-1 text-blue-500"></i>${car.CarNumber}
-            </span>
+  <div dir="ltr" class="inline-flex items-center bg-yellow-300 border border-black rounded px-2 py-1 shadow-sm" style="font-family: 'Courier New', monospace;">
+    <div class="flex flex-col items-center bg-white p-0.5 mr-2 border border-black rounded-sm">
+      <div class="w-4 h-2.5 mb-0.5" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Flag_of_Israel.svg/2000px-Flag_of_Israel.svg.png'); background-size: cover; background-position: center;"></div>
+      <div class="text-[8px] font-bold leading-none">IL</div>
+    </div>
+    <div class="text-sm font-bold tracking-[0.15em] font-mono">${formatLicensePlate(car.CarNumber)}</div>
+  </div>
             <span class="text-xs font-medium py-1 px-2 rounded-full flex items-center
               ${car.Status === 'אושר' ? 'bg-green-100 text-green-700' : ''}
               ${car.Status === 'ממתין לעדכון' ? 'bg-yellow-100 text-yellow-700' : ''}
