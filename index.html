@@ -758,6 +758,28 @@
   }
   return cleanNum;
 }
+// Date formatting function
+function formatDate(dateString) {
+  // Return 'לא צוין' if date is null, undefined, or empty
+  if (!dateString) return 'לא צוין';
+  
+  try {
+    // Parse the date (assuming dateString is in any valid date format)
+    const date = new Date(dateString);
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) return 'לא צוין';
+    
+    // Format to dd/mm/yyyy
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // +1 because months are 0-based
+    const year = date.getFullYear();
+    
+    return `${day}/${month}/${year}`;
+  } catch (error) {
+    return 'לא צוין';
+  }
+}
       function refreshCarList() {
         showLoading();
         if (elements.carItems) {
@@ -823,7 +845,7 @@
                 <span class="font-medium mr-1">תאריך התחלה:</span>
                 <span title="תאריך התחלה">
                   <i class="fas fa-calendar-alt mr-1 text-green-600"></i>
-                  ${car.StartingDate || 'לא צוין'}
+                  ${formatDate(car.StartingDate)}
                 </span>
               </div>
             ` : `
@@ -831,7 +853,7 @@
                 <span class="font-medium mr-1">תאריך אירוח:</span>
                 <span title="תאריך אירוח">
                   <i class="fas fa-calendar-day mr-1 text-blue-600"></i>
-                  ${car.GuestDate || 'לא צוין'}
+                  ${formatDate(car.GuestDate)}
                 </span>
               </div>
               <div>
