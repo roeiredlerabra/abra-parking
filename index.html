@@ -134,6 +134,7 @@
         white 80%
       );
     }
+
   </style>
 </head>
 
@@ -780,6 +781,17 @@ function formatDate(dateString) {
     return 'לא צוין';
   }
 }
+// Function to format person type
+function formatPersonType(type) {
+  switch(type) {
+    case 'Employee':
+      return 'עובד';
+    case 'Guest':
+      return 'אורח';
+    default:
+      return type || 'לא צוין';
+  }
+}
       function refreshCarList() {
         showLoading();
         if (elements.carItems) {
@@ -797,13 +809,20 @@ function formatDate(dateString) {
             <i class="fas fa-car mr-2 text-blue-500"></i>${car.FullName}
           </h3>
           <div class="flex items-center space-x-2">
-  <div dir="ltr" class="inline-flex items-center bg-yellow-300 border border-black rounded px-2 py-1 shadow-sm" style="font-family: 'Courier New', monospace;">
-    <div class="flex flex-col items-center bg-white p-0.5 mr-2 border border-black rounded-sm">
-      <div class="w-4 h-2.5 mb-0.5" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Flag_of_Israel.svg/2000px-Flag_of_Israel.svg.png'); background-size: cover; background-position: center;"></div>
-      <div class="text-[8px] font-bold leading-none">IL</div>
+ <style>
+  @media (max-width: 768px) {
+    .license-number {
+      font-size: 0.75rem !important; /* 12px */
+    }
+  }
+</style>
+
+<div dir="ltr" class="inline-flex items-center bg-yellow-300 border border-black rounded px-2 py-1 shadow-sm" style="font-family: 'Courier New', monospace;">
+    <div class="flex flex-col items-center bg-white p-0.5 mr-2 border border-black rounded-sm" style="padding: 2px 2px; margin-right: 8px;">
+      <div class="w-4 h-2.5 mb-0.5" style="width: 16px; height: 10px; margin-bottom: 2px; background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Flag_of_Israel.svg/2000px-Flag_of_Israel.svg.png'); background-size: cover; background-position: center;"></div>
     </div>
-    <div class="text-sm font-bold tracking-[0.15em] font-mono">${formatLicensePlate(car.CarNumber)}</div>
-  </div>
+    <div class="license-number text-sm font-bold tracking-[0.15em] font-mono" style="font-family: 'Courier New', monospace; font-weight: bold; letter-spacing: 0.15em; font-size: 0.875rem;">${formatLicensePlate(car.CarNumber)}</div>
+</div>
             <span class="text-xs font-medium py-1 px-2 rounded-full flex items-center
               ${car.Status === 'אושר' ? 'bg-green-100 text-green-700' : ''}
               ${car.Status === 'ממתין לעדכון' ? 'bg-yellow-100 text-yellow-700' : ''}
@@ -837,7 +856,7 @@ function formatDate(dateString) {
               <span class="font-medium mr-1">סוג:</span>
               <span title="סוג">
                 <i class="fas fa-id-badge mr-1 ${car.PersonType === 'Employee' ? 'text-green-600' : 'text-blue-600'}"></i>
-                ${car.PersonType}
+                 ${formatPersonType(car.PersonType)}
               </span>
             </div>
             ${car.PersonType === 'Employee' ? `
